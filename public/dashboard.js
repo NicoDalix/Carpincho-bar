@@ -1,17 +1,17 @@
 let mesas = [];
 let mesaSeleccionada = null;
 let user = API.getCurrentUser();
-
+ 
 // Verificar autenticación
 if (!user) {
     window.location.href = 'login.html';
 }
-
+ 
 // Configurar usuario
 if (user.nombre) {
     document.getElementById('user-name').textContent = `Hola, ${user.nombre}`;
 }
-
+ 
 // Logout
 document.getElementById('logout-btn').addEventListener('click', () => {
     API.logout();
@@ -19,7 +19,7 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem('user');
     window.location.href = 'login.html';
 });
-
+ 
 // Tabs del dashboard
 document.querySelectorAll('.dashboard-tabs .tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -40,24 +40,54 @@ document.querySelectorAll('.dashboard-tabs .tab-btn').forEach(btn => {
         }
     });
 });
-
-// Cargar mesas
+ 
+// Cargar mesas para la fecha/hora que el usuario tiene elegida en el form.
+// Si todavía no eligió nada, el backend usa "ahora" por defecto.
 async function cargarMesas() {
     try {
-        mesas = await API.getMesas();
+        const fechaHora = document.getElementById('fecha-reserva').value;
+        mesas = await API.getMesas(fechaHora || undefined);
         renderizarMesas();
     } catch (error) {
         console.error('Error al cargar mesas:', error);
     }
 }
-
+ 
+// Si el usuario cambia el día u horario, las mesas disponibles cambian:
+// hay que volver a pedirlas al servidor con la nueva fecha/hora.
+document.getElementById('fecha-reserva').addEventListener('change', () => {
+    // Si estaba en medio de confirmar una reserva con la mesa/fecha vieja,
+    // cancelamos esa selección para que no quede desincronizada.
+    mesaSeleccionada = null;
+    document.getElementById('modal-reserva').classList.remove('show');
+    cargarMesas();
+});
+ 
+// --- Auto-refresh (polling) ---
+// Cada POLLING_MS milisegundos, si el usuario está parado en la pestaña
+// "Reservar Mesa", volvemos a pedir las mesas. Así, si OTRO usuario (o el
+// panel de admin) reserva o cancela una mesa en ese mismo horario, el
+// cambio se refleja solo, sin que haga falta recargar la página.
+const POLLING_MS = 15000; // 15 segundos: suficientemente ágil sin saturar el servidor
+ 
+setInterval(() => {
+    const seccionMesasActiva = document.getElementById('mesas-section').classList.contains('active');
+    const modalAbierto = document.getElementById('modal-reserva').classList.contains('show');
+ 
+    // No refrescamos si el usuario está con el modal de confirmación
+    // abierto: le cambiaríamos la grilla de mesas debajo sin avisarle.
+    if (seccionMesasActiva && !modalAbierto) {
+        cargarMesas();
+    }
+}, POLLING_MS);
+ 
 function renderizarMesas() {
     const sectores = {
         'interior': document.getElementById('interior-mesas'),
         'exclusivo': document.getElementById('exclusivo-mesas'),
         'patio': document.getElementById('patio-mesas')
     };
-
+ 
     Object.keys(sectores).forEach(sector => {
         sectores[sector].innerHTML = '';
         
@@ -68,7 +98,7 @@ function renderizarMesas() {
         });
     });
 }
-
+ 
 function crearMesaCard(mesa) {
     const card = document.createElement('div');
     card.className = `mesa-card ${mesa.disponible ? 'disponible' : 'ocupada'}`;
@@ -86,7 +116,7 @@ function crearMesaCard(mesa) {
     
     return card;
 }
-
+ 
 function seleccionarMesa(mesa) {
     // Remover selección anterior
     document.querySelectorAll('.mesa-card').forEach(c => {
@@ -101,7 +131,7 @@ function seleccionarMesa(mesa) {
     // Mostrar modal de confirmación
     mostrarModalReserva(mesa);
 }
-
+ 
 function mostrarModalReserva(mesa) {
     const fechaHora = document.getElementById('fecha-reserva').value;
     const cantidadPersonas = document.getElementById('cantidad-personas').value;
@@ -133,7 +163,7 @@ function mostrarModalReserva(mesa) {
     
     modal.classList.add('show');
 }
-
+ 
 // Cerrar modal
 document.querySelector('.close-modal').addEventListener('click', () => {
     document.getElementById('modal-reserva').classList.remove('show');
@@ -142,7 +172,7 @@ document.querySelector('.close-modal').addEventListener('click', () => {
         c.classList.remove('seleccionada');
     });
 });
-
+ 
 document.getElementById('cancelar-reserva-btn').addEventListener('click', () => {
     document.getElementById('modal-reserva').classList.remove('show');
     mesaSeleccionada = null;
@@ -150,7 +180,7 @@ document.getElementById('cancelar-reserva-btn').addEventListener('click', () => 
         c.classList.remove('seleccionada');
     });
 });
-
+ 
 // Confirmar reserva
 document.getElementById('confirmar-reserva-btn').addEventListener('click', async () => {
     if (!mesaSeleccionada) return;
@@ -177,7 +207,7 @@ document.getElementById('confirmar-reserva-btn').addEventListener('click', async
         alert(error.error || 'Error al crear la reserva');
     }
 });
-
+ 
 // Cargar reservas
 async function cargarReservas() {
     try {
@@ -187,7 +217,7 @@ async function cargarReservas() {
         console.error('Error al cargar reservas:', error);
     }
 }
-
+ 
 function renderizarReservas(reservas) {
     const container = document.getElementById('reservas-container');
     
@@ -203,7 +233,7 @@ function renderizarReservas(reservas) {
         container.appendChild(card);
     });
 }
-
+ 
 function crearReservaCard(reserva) {
     const card = document.createElement('div');
     card.className = 'reserva-card';
@@ -278,7 +308,7 @@ function crearReservaCard(reserva) {
     
     return card;
 }
-
+ 
 // Cancelar reserva
 window.cancelarReserva = async function(reservaId) {
     if (!confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
@@ -300,7 +330,7 @@ window.cancelarReserva = async function(reservaId) {
         alert(error.error || 'Error al cancelar la reserva');
     }
 };
-
+ 
 // Cargar carta
 async function cargarCarta() {
     try {
@@ -310,21 +340,21 @@ async function cargarCarta() {
         console.error('Error al cargar la carta:', error);
     }
 }
-
+ 
 function mostrarCartaEnDashboard(carta) {
     const platosContainer = document.getElementById('carta-platos-container');
     const bebidasContainer = document.getElementById('carta-bebidas-container');
-
+ 
     platosContainer.innerHTML = '';
     bebidasContainer.innerHTML = '';
-
+ 
     // Organizar platos por categoría
     const categoriasPlatos = {
         'Entradas': carta.platos.filter(p => p.categoria === 'Entradas'),
         'Platos Principales': carta.platos.filter(p => p.categoria === 'Platos Principales'),
         'Postres': carta.platos.filter(p => p.categoria === 'Postres')
     };
-
+ 
     // Mostrar platos por categoría
     Object.keys(categoriasPlatos).forEach(categoria => {
         const items = categoriasPlatos[categoria];
@@ -344,7 +374,7 @@ function mostrarCartaEnDashboard(carta) {
             platosContainer.appendChild(categoriaDiv);
         }
     });
-
+ 
     // Organizar bebidas por categoría
     const categoriasBebidas = {
         'Sin Alcohol': carta.bebidas.filter(b => b.categoria === 'Sin Alcohol'),
@@ -352,7 +382,7 @@ function mostrarCartaEnDashboard(carta) {
         'Cervezas': carta.bebidas.filter(b => b.categoria === 'Cervezas'),
         'Espumantes': carta.bebidas.filter(b => b.categoria === 'Espumantes')
     };
-
+ 
     // Mostrar bebidas por categoría
     Object.keys(categoriasBebidas).forEach(categoria => {
         const items = categoriasBebidas[categoria];
@@ -373,7 +403,7 @@ function mostrarCartaEnDashboard(carta) {
         }
     });
 }
-
+ 
 function crearItemCardCarta(item) {
     const card = document.createElement('div');
     card.className = 'item-card';
@@ -383,7 +413,6 @@ function crearItemCardCarta(item) {
     `;
     return card;
 }
-
+ 
 // Cargar mesas al iniciar
 cargarMesas();
-
