@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Reservá tu mesa en El Carpincho Gourmet">
+    <title>Mis Reservas - El Carpincho Gourmet</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+    <a href="#contenido-principal" class="skip-link">Saltar al contenido</a>
+
+    <header>
+        <div class="container">
+            <h1 class="brand">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 18.25h18"/>
+                        <path d="M4.75 15.25a7.25 7.25 0 0 1 14.5 0"/>
+                        <path d="M12 8V6.6"/>
+                        <circle cx="12" cy="5.1" r="1.3"/>
+                    </svg>
+                </span>
+                <span class="brand-text">
+                    <span>El Carpincho</span>
+                    <span class="brand-accent">Gourmet</span>
+                </span>
+            </h1>
+            <nav aria-label="Navegación del usuario">
+                <a href="index.html">Carta</a>
+                <span id="user-name"></span>
+                <button id="logout-btn" class="btn btn-secondary" aria-label="Cerrar sesión">Cerrar Sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="contenido-principal" class="container">
+        <div class="dashboard-tabs" role="tablist" aria-label="Secciones del panel">
+            <button class="tab-btn active" data-tab="mesas" role="tab" aria-selected="true">Reservar Mesa</button>
+            <button class="tab-btn" data-tab="reservas" role="tab" aria-selected="false">Mis Reservas</button>
+            <button class="tab-btn" data-tab="carta" role="tab" aria-selected="false">Ver Carta</button>
+        </div>
+
+        <div id="mesas-section" class="dashboard-section active" role="tabpanel">
+            <div class="page-header">
+                <h2>Reservar Mesa</h2>
+                <p>Completá los datos y elegí una mesa disponible.</p>
+            </div>
+
+            <div class="steps-guide" aria-label="Pasos para reservar">
+                <div class="step-item">
+                    <div class="step-number" aria-hidden="true">1</div>
+                    <p>Elegí fecha, hora y cantidad de personas</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number" aria-hidden="true">2</div>
+                    <p>Seleccioná una mesa verde (disponible)</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number" aria-hidden="true">3</div>
+                    <p>Confirmá tu reserva</p>
+                </div>
+            </div>
+
+            <div class="reserva-form-container">
+                <form id="reserva-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha-reserva">Fecha y Hora</label>
+                            <input type="datetime-local" id="fecha-reserva" required aria-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad-personas">Cantidad de Personas</label>
+                            <input type="number" id="cantidad-personas" min="1" max="10" required
+                                   placeholder="Ej: 4" aria-required="true">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mesa-legend" aria-label="Leyenda de mesas">
+                <div class="legend-item"><span class="legend-dot disponible"></span> Disponible</div>
+                <div class="legend-item"><span class="legend-dot ocupada"></span> Ocupada</div>
+                <div class="legend-item"><span class="legend-dot seleccionada"></span> Seleccionada</div>
+            </div>
+
+            <div class="sectores-container">
+                <div class="sector">
+                    <h3>Sector Interior (Clásico)</h3>
+                    <p class="tarifa-info">Tarifa mínima: $5.000</p>
+                    <div id="interior-mesas" class="mesas-grid" aria-live="polite"></div>
+                </div>
+
+                <div class="sector">
+                    <h3>Sector Exclusivo</h3>
+                    <p class="tarifa-info">Tarifa mínima: $10.000</p>
+                    <div id="exclusivo-mesas" class="mesas-grid" aria-live="polite"></div>
+                </div>
+
+                <div class="sector">
+                    <h3>Sector Patio</h3>
+                    <p class="tarifa-info">Tarifa mínima: $7.000</p>
+                    <div id="patio-mesas" class="mesas-grid" aria-live="polite"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="reservas-section" class="dashboard-section" role="tabpanel">
+            <div class="page-header">
+                <h2>Mis Reservas</h2>
+                <p>Consultá y gestioná tus reservas activas.</p>
+            </div>
+            <div id="reservas-container" class="reservas-list" aria-live="polite"></div>
+        </div>
+
+        <div id="carta-section" class="dashboard-section" role="tabpanel">
+            <div class="page-header">
+                <h2>Nuestra Carta</h2>
+                <p>Menú completo del restaurante.</p>
+            </div>
+            <div class="carta-container">
+                <div class="categoria">
+                    <h3>Platos</h3>
+                    <div id="carta-platos-container" class="items-grid"></div>
+                </div>
+                <div class="categoria">
+                    <h3>Bebidas</h3>
+                    <div id="carta-bebidas-container" class="items-grid"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-reserva" class="modal" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+        <div class="modal-content">
+            <span class="close-modal" role="button" tabindex="0" aria-label="Cerrar">
+                <svg class="icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/>
+                </svg>
+            </span>
+            <h3 id="modal-title">Confirmar Reserva</h3>
+            <div id="modal-reserva-info"></div>
+            <div class="modal-actions">
+                <button id="confirmar-reserva-btn" class="btn btn-primary">Confirmar reserva</button>
+                <button id="cancelar-reserva-btn" class="btn btn-secondary">Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Restaurante El Carpincho Gourmet. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="ui.js?v=2"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
+

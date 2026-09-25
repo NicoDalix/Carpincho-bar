@@ -1,0 +1,7 @@
+# Apache (mod_php) descarta el header Authorization antes de exponerlo a PHP,
+# por lo que $_SERVER['HTTP_AUTHORIZATION'] llega vacío y toda la autenticación
+# JWT falla con 401. Estas directivas lo reinyectan en el entorno del script.
+
+<IfModule mod_setenvif.c>
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+</IfModule>

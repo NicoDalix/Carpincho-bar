@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de administración del restaurante">
+    <title>Administración - El Carpincho Gourmet</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+    <a href="#contenido-principal" class="skip-link">Saltar al contenido</a>
+
+    <header>
+        <div class="container">
+            <h1 class="brand">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 18.25h18"/>
+                        <path d="M4.75 15.25a7.25 7.25 0 0 1 14.5 0"/>
+                        <path d="M12 8V6.6"/>
+                        <circle cx="12" cy="5.1" r="1.3"/>
+                    </svg>
+                </span>
+                <span class="brand-text">
+                    <span>El Carpincho</span>
+                    <span class="brand-accent">Administración</span>
+                </span>
+            </h1>
+            <nav aria-label="Navegación de administrador">
+                <a href="index.html">Ver sitio</a>
+                <span id="admin-name"></span>
+                <button id="logout-btn" class="btn btn-secondary" aria-label="Cerrar sesión">Cerrar Sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="contenido-principal" class="container">
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="reservas">Todas las Reservas</button>
+            <button class="tab-btn" data-tab="buscar">Buscar Reserva</button>
+            <button class="tab-btn" data-tab="crear">Crear Reserva</button>
+            <button class="tab-btn" data-tab="carta">Gestionar Carta</button>
+        </div>
+
+        <!-- Sección: Todas las Reservas -->
+        <div id="reservas-section" class="admin-section active">
+            <h2>Todas las Reservas</h2>
+            <div class="filtros-container">
+                <select id="filtro-estado" class="filtro-select">
+                    <option value="todas">Todas</option>
+                    <option value="confirmada">Confirmadas</option>
+                    <option value="cancelada">Canceladas</option>
+                </select>
+                <button id="refrescar-reservas" class="btn btn-primary">Refrescar</button>
+            </div>
+            <div id="todas-reservas-container" class="reservas-list"></div>
+        </div>
+
+        <!-- Sección: Buscar Reserva -->
+        <div id="buscar-section" class="admin-section">
+            <h2>Buscar Reserva por Nombre</h2>
+            <div class="buscar-form-container">
+                <form id="buscar-form">
+                    <div class="form-group">
+                        <label for="nombre-buscar">Nombre del Cliente</label>
+                        <input type="text" id="nombre-buscar" placeholder="Ingrese el nombre del cliente" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </form>
+            </div>
+            <div id="resultados-busqueda" class="reservas-list"></div>
+        </div>
+
+        <!-- Sección: Crear Reserva -->
+        <div id="crear-section" class="admin-section">
+            <h2>Crear Reserva Manualmente</h2>
+            <div class="crear-reserva-container">
+                <form id="crear-reserva-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre-cliente">Nombre del Cliente *</label>
+                            <input type="text" id="nombre-cliente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email-cliente">Email (opcional)</label>
+                            <input type="email" id="email-cliente">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="telefono-cliente">Teléfono (opcional)</label>
+                            <input type="text" id="telefono-cliente">
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha-reserva-admin">Fecha y Hora *</label>
+                            <input type="datetime-local" id="fecha-reserva-admin" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cantidad-personas-admin">Cantidad de Personas *</label>
+                            <input type="number" id="cantidad-personas-admin" min="1" max="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mesa-seleccionar-admin">Mesa *</label>
+                            <select id="mesa-seleccionar-admin" required>
+                                <option value="">Seleccione una mesa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Crear Reserva</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sección: Gestionar Carta -->
+        <div id="carta-section" class="admin-section">
+            <h2>Gestionar Carta</h2>
+            <p class="section-desc">Agregá o eliminá platos y bebidas del menú. Los cambios se ven al instante en la carta pública.</p>
+
+            <div class="carta-admin-form-container">
+                <h3>Agregar nuevo ítem</h3>
+                <form id="agregar-carta-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="carta-tipo">Tipo *</label>
+                            <select id="carta-tipo" required>
+                                <option value="plato">Plato</option>
+                                <option value="bebida">Bebida</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="carta-categoria">Categoría *</label>
+                            <select id="carta-categoria" required></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="carta-nombre">Nombre *</label>
+                            <input type="text" id="carta-nombre" placeholder="Ej: Bife de Chorizo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carta-precio">Precio ($) *</label>
+                            <input type="number" id="carta-precio" min="1" step="1" placeholder="Ej: 15000" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar al menú</button>
+                </form>
+                <div id="carta-form-mensaje" class="carta-form-mensaje"></div>
+            </div>
+
+            <div class="carta-container">
+                <div class="categoria">
+                    <h3>Platos</h3>
+                    <div id="admin-carta-platos-container"></div>
+                </div>
+
+                <div class="categoria">
+                    <h3>Bebidas</h3>
+                    <div id="admin-carta-bebidas-container"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Restaurante El Carpincho Gourmet. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="ui.js?v=2"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
+
