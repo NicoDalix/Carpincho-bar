@@ -4,3 +4,6 @@ data/
 .DS_Store
 .env
 
+
+# Secreto JWT generado automáticamente (no compartir)
+public/app/jwt-secret.php

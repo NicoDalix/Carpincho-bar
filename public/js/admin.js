@@ -1,22 +1,22 @@
-let user = API.getCurrentUser();
+/**
+ * Panel de administración (admin.html): listado, búsqueda, alta y baja de
+ * reservas, y gestión de la carta.
+ *
+ * El control de rol de acá es solo de interfaz: la protección real está en el
+ * servidor (requireAdmin() en cada endpoint de api/admin/).
+ */
 
-// Verificar autenticación y rol de admin
+const user = API.getCurrentUser();
+
 if (!user || user.rol !== 'admin') {
-    alert('Acceso denegado. Debes ser administrador para acceder a esta página.');
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
     throw new Error('Acceso denegado');
 }
 
-// Configurar usuario
-if (user.nombre) {
-    document.getElementById('admin-name').textContent = `Admin: ${user.nombre}`;
-}
+document.getElementById('admin-name').textContent = `Admin: ${user.nombre}`;
 
-// Logout
 document.getElementById('logout-btn').addEventListener('click', () => {
     API.logout();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
     window.location.href = 'login.html';
 });
 
@@ -24,13 +24,13 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
-        
+
         document.querySelectorAll('.admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
+
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.getElementById(`${tab}-section`).classList.add('active');
-        
+
         if (tab === 'reservas') {
             cargarTodasReservas();
         } else if (tab === 'crear') {
@@ -41,77 +41,79 @@ document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
     });
 });
 
-// Cargar todas las reservas
+function formatearSector(sector) {
+    return sector.charAt(0).toUpperCase() + sector.slice(1);
+}
+
+// --- Todas las reservas ---
 async function cargarTodasReservas() {
     try {
         const reservas = await API.adminGetReservas();
         renderizarTodasReservas(reservas);
     } catch (error) {
         console.error('Error al cargar reservas:', error);
-        document.getElementById('todas-reservas-container').innerHTML = 
-            '<p style="color: red; padding: 1rem; background: #fee; border-radius: 5px;">Error al cargar las reservas</p>';
+        document.getElementById('todas-reservas-container').innerHTML =
+            '<p class="mensaje-error-carga">Error al cargar las reservas.</p>';
     }
 }
 
 function renderizarTodasReservas(reservas) {
     const container = document.getElementById('todas-reservas-container');
     const filtroEstado = document.getElementById('filtro-estado').value;
-    
-    let reservasFiltradas = reservas;
-    if (filtroEstado !== 'todas') {
-        reservasFiltradas = reservas.filter(r => r.estado === filtroEstado);
-    }
-    
-    // Ordenar por fecha (más recientes primero)
+
+    const reservasFiltradas = filtroEstado === 'todas'
+        ? reservas
+        : reservas.filter(r => r.estado === filtroEstado);
+
+    // Más recientes primero
     reservasFiltradas.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-    
+
     if (reservasFiltradas.length === 0) {
         container.innerHTML = '<p>No hay reservas para mostrar.</p>';
         return;
     }
-    
+
     container.innerHTML = '';
-    
-    reservasFiltradas.forEach(reserva => {
-        const card = crearReservaAdminCard(reserva);
-        container.appendChild(card);
-    });
+    reservasFiltradas.forEach(reserva => container.appendChild(crearReservaAdminCard(reserva)));
 }
 
 function crearReservaAdminCard(reserva) {
-    const card = document.createElement('div');
+    const card = document.createElement('article');
     card.className = 'reserva-card admin-reserva-card';
-    
-    const fecha = new Date(reserva.fechaHora);
-    const fechaFormateada = fecha.toLocaleString('es-ES', {
+
+    const fechaFormateada = new Date(reserva.fechaHora).toLocaleString('es-AR', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: false
     });
-    
+
     const estadoClass = reserva.estado === 'confirmada' ? 'estado-confirmada' : 'estado-cancelada';
     const estadoTexto = reserva.estado === 'confirmada' ? 'Confirmada' : 'Cancelada';
-    
+    const mesaTexto = reserva.mesa
+        ? `Mesa ${reserva.mesa.numero} - ${formatearSector(reserva.mesa.sector)}`
+        : 'N/A';
+
     card.innerHTML = `
         <h4>Reserva #${reserva.id}</h4>
         <div class="reserva-info">
             <div class="reserva-info-item">
                 <label>Cliente</label>
-                <span>${reserva.usuario ? reserva.usuario.nombre : (reserva.nombreCliente || 'N/A')}</span>
+                <span>${escapeHtml(reserva.usuario ? reserva.usuario.nombre : (reserva.nombreCliente || 'N/A'))}</span>
             </div>
             <div class="reserva-info-item">
                 <label>Email</label>
-                <span>${reserva.usuario ? reserva.usuario.email : 'N/A'}</span>
+                <span>${escapeHtml(reserva.usuario ? reserva.usuario.email : 'N/A')}</span>
             </div>
             <div class="reserva-info-item">
                 <label>Teléfono</label>
-                <span>${reserva.telefono || 'N/A'}</span>
+                <span>${escapeHtml(reserva.telefono || 'N/A')}</span>
             </div>
             <div class="reserva-info-item">
                 <label>Mesa</label>
-                <span>Mesa ${reserva.mesa ? reserva.mesa.numero : 'N/A'} - ${reserva.mesa ? reserva.mesa.sector.charAt(0).toUpperCase() + reserva.mesa.sector.slice(1) : 'N/A'}</span>
+                <span>${mesaTexto}</span>
             </div>
             <div class="reserva-info-item">
                 <label>Fecha y Hora</label>
@@ -123,7 +125,7 @@ function crearReservaAdminCard(reserva) {
             </div>
             <div class="reserva-info-item">
                 <label>Tarifa Mínima</label>
-                <span>$${reserva.tarifaMinima.toLocaleString()}</span>
+                <span>${UI.formatMoney(reserva.tarifaMinima)}</span>
             </div>
             <div class="reserva-info-item">
                 <label>Estado</label>
@@ -132,131 +134,129 @@ function crearReservaAdminCard(reserva) {
             ${reserva.creadaPorAdmin ? '<div class="reserva-info-item"><label>Creada por</label><span>Administrador</span></div>' : ''}
         </div>
         <div class="reserva-actions">
-            ${reserva.estado === 'confirmada' ? `
-                <button class="btn-cancelar" onclick="eliminarReserva(${reserva.id})">
-                    Eliminar Reserva
-                </button>
-            ` : ''}
+            ${reserva.estado === 'confirmada' ? '<button type="button" class="btn-cancelar">Eliminar Reserva</button>' : ''}
         </div>
     `;
-    
+
+    if (reserva.estado === 'confirmada') {
+        card.querySelector('.btn-cancelar').addEventListener('click', () => eliminarReserva(reserva.id));
+    }
+
     return card;
 }
 
-// Eliminar reserva
-window.eliminarReserva = async function(reservaId) {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta reserva? Esta acción no se puede deshacer.')) {
-        return;
-    }
-    
+async function eliminarReserva(reservaId) {
+    const confirmado = await UI.confirm(
+        'Esta acción no se puede deshacer.',
+        `¿Eliminar la reserva #${reservaId}?`
+    );
+    if (!confirmado) return;
+
     try {
-        const data = await API.adminDeleteReserva(reservaId);
-        alert('Reserva eliminada exitosamente');
+        await API.adminDeleteReserva(reservaId);
+        UI.success('Reserva eliminada.');
         cargarTodasReservas();
     } catch (error) {
-        alert(error.error || 'Error al eliminar la reserva');
+        UI.error(error.error || 'Error al eliminar la reserva');
     }
-};
+}
 
-// Buscar reservas por nombre
+document.getElementById('filtro-estado').addEventListener('change', cargarTodasReservas);
+document.getElementById('refrescar-reservas').addEventListener('click', cargarTodasReservas);
+
+// --- Buscar reservas por nombre ---
 document.getElementById('buscar-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const nombre = document.getElementById('nombre-buscar').value;
-    
+    const nombre = document.getElementById('nombre-buscar').value.trim();
+    const container = document.getElementById('resultados-busqueda');
+
     if (!nombre) {
-        alert('Por favor ingrese un nombre para buscar');
+        UI.error('Ingresá un nombre para buscar.');
         return;
     }
-    
+
     try {
         const reservas = await API.adminBuscarReservas(nombre);
-        const container = document.getElementById('resultados-busqueda');
-        
+
         if (reservas.length === 0) {
-            container.innerHTML = `<p>No se encontraron reservas para "${nombre}".</p>`;
+            container.innerHTML = `<p>No se encontraron reservas para "${escapeHtml(nombre)}".</p>`;
             return;
         }
-        
+
         container.innerHTML = '';
-        reservas.forEach(reserva => {
-            const card = crearReservaAdminCard(reserva);
-            container.appendChild(card);
-        });
+        reservas.forEach(reserva => container.appendChild(crearReservaAdminCard(reserva)));
     } catch (error) {
         console.error('Error al buscar:', error);
-        document.getElementById('resultados-busqueda').innerHTML = 
-            '<p style="color: red;">Error al buscar reservas.</p>';
+        container.innerHTML = '<p class="mensaje-error-carga">Error al buscar reservas.</p>';
     }
 });
 
-// Cargar mesas para el select
+// --- Crear reserva manualmente ---
+
+// Carga las mesas en el select con la disponibilidad del horario elegido en
+// el formulario (sin fecha elegida, el backend usa "ahora").
 async function cargarMesasParaSelect() {
     try {
-        const mesas = await API.adminGetMesas();
+        const fechaHora = document.getElementById('fecha-reserva-admin').value;
+        const mesas = await API.adminGetMesas(fechaHora || undefined);
         const select = document.getElementById('mesa-seleccionar-admin');
+        const seleccionPrevia = select.value;
         select.innerHTML = '<option value="">Seleccione una mesa</option>';
-        
+
         mesas.forEach(mesa => {
             const option = document.createElement('option');
             option.value = mesa.id;
             const estado = mesa.disponible ? 'Disponible' : 'Ocupada';
-            option.textContent = `Mesa ${mesa.numero} - ${mesa.sector.charAt(0).toUpperCase() + mesa.sector.slice(1)} (${estado}) - Cap: ${mesa.capacidad} pers.`;
+            option.textContent = `Mesa ${mesa.numero} - ${formatearSector(mesa.sector)} (${estado}) - Cap: ${mesa.capacidad} pers.`;
             option.disabled = !mesa.disponible;
             select.appendChild(option);
         });
+
+        // Si la mesa que estaba elegida sigue libre en el nuevo horario, se mantiene
+        const previa = select.querySelector(`option[value="${seleccionPrevia}"]`);
+        if (previa && !previa.disabled) {
+            select.value = seleccionPrevia;
+        }
     } catch (error) {
         console.error('Error al cargar mesas:', error);
     }
 }
 
-// Crear reserva manualmente
+// Al cambiar el horario cambia qué mesas están libres
+document.getElementById('fecha-reserva-admin').addEventListener('change', cargarMesasParaSelect);
+
 document.getElementById('crear-reserva-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const nombreCliente = document.getElementById('nombre-cliente').value;
     const emailCliente = document.getElementById('email-cliente').value;
     const telefono = document.getElementById('telefono-cliente').value;
     const fechaHora = document.getElementById('fecha-reserva-admin').value;
-    const cantidadPersonas = parseInt(document.getElementById('cantidad-personas-admin').value);
-    const mesaId = parseInt(document.getElementById('mesa-seleccionar-admin').value);
-    
+    const cantidadPersonas = parseInt(document.getElementById('cantidad-personas-admin').value, 10);
+    const mesaId = parseInt(document.getElementById('mesa-seleccionar-admin').value, 10);
+
     if (!mesaId) {
-        alert('Por favor seleccione una mesa');
+        UI.error('Seleccioná una mesa.');
         return;
     }
-    
+
     try {
-        const data = await API.adminCreateReserva(mesaId, fechaHora, cantidadPersonas, nombreCliente, emailCliente, telefono);
-        alert('¡Reserva creada exitosamente!');
+        await API.adminCreateReserva(mesaId, fechaHora, cantidadPersonas, nombreCliente, emailCliente, telefono);
+        UI.success('¡Reserva creada!');
         document.getElementById('crear-reserva-form').reset();
         cargarMesasParaSelect();
-        // Cambiar a la pestaña de reservas
         document.querySelector('[data-tab="reservas"]').click();
     } catch (error) {
-        alert(error.error || 'Error al crear la reserva');
+        UI.error(error.error || 'Error al crear la reserva');
     }
 });
 
-// Filtro de estado
-document.getElementById('filtro-estado').addEventListener('change', () => {
-    cargarTodasReservas();
-});
-
-// Botón refrescar
-document.getElementById('refrescar-reservas').addEventListener('click', () => {
-    cargarTodasReservas();
-});
-
-const CATEGORIAS_CARTA = {
-    plato: ['Entradas', 'Platos Principales', 'Postres'],
-    bebida: ['Sin Alcohol', 'Vinos', 'Cervezas', 'Espumantes']
-};
-
+// --- Gestionar carta ---
 function actualizarCategoriasCartaForm() {
     const tipo = document.getElementById('carta-tipo').value;
     const select = document.getElementById('carta-categoria');
     select.innerHTML = CATEGORIAS_CARTA[tipo]
-        .map(cat => `<option value="${cat}">${cat}</option>`)
+        .map(cat => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`)
         .join('');
 }
 
@@ -289,87 +289,45 @@ document.getElementById('agregar-carta-form').addEventListener('submit', async (
     }
 });
 
-// Cargar carta en admin
+// Tarjeta de la carta con botón para eliminar el ítem
+function crearItemCartaAdmin(tipo) {
+    return (item) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'admin-carta-item';
+
+        const card = crearItemCartaCard(item);
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'btn-eliminar-carta';
+        boton.textContent = 'Eliminar';
+        boton.addEventListener('click', () => eliminarItemCarta(tipo, item.id, item.nombre));
+        card.appendChild(boton);
+
+        wrapper.appendChild(card);
+        return wrapper;
+    };
+}
+
 async function cargarCartaAdmin() {
+    const platos = document.getElementById('admin-carta-platos-container');
+    const bebidas = document.getElementById('admin-carta-bebidas-container');
+
     try {
         const carta = await API.getCarta();
-        mostrarCartaEnAdmin(carta);
+        renderizarSeccionCarta(platos, carta.platos, CATEGORIAS_CARTA.plato, crearItemCartaAdmin('plato'));
+        renderizarSeccionCarta(bebidas, carta.bebidas, CATEGORIAS_CARTA.bebida, crearItemCartaAdmin('bebida'));
     } catch (error) {
         console.error('Error al cargar la carta:', error);
+        platos.innerHTML = '<p class="mensaje-error-carga">Error al cargar la carta.</p>';
     }
 }
 
-function renderizarItemsPorCategoria(container, items, categorias, tipo) {
-    container.innerHTML = '';
-
-    if (!items || items.length === 0) {
-        container.innerHTML = '<p class="carta-vacia-msg">No hay ítems en esta sección.</p>';
-        return;
-    }
-
-    const categoriasUsadas = new Set(categorias);
-    const itemsOtros = items.filter(i => !categoriasUsadas.has(i.categoria));
-    const todasCategorias = itemsOtros.length > 0 ? [...categorias, 'Otros'] : categorias;
-
-    todasCategorias.forEach(categoria => {
-        const lista = categoria === 'Otros'
-            ? itemsOtros
-            : items.filter(i => i.categoria === categoria);
-
-        if (lista.length === 0) return;
-
-        const categoriaDiv = document.createElement('div');
-        categoriaDiv.className = 'subcategoria';
-        categoriaDiv.innerHTML = `<h4 class="subcategoria-titulo">${categoria}</h4>`;
-        const itemsGrid = document.createElement('div');
-        itemsGrid.className = 'items-grid';
-
-        lista.forEach(item => {
-            itemsGrid.appendChild(crearItemCardCarta(item, tipo));
-        });
-
-        categoriaDiv.appendChild(itemsGrid);
-        container.appendChild(categoriaDiv);
-    });
-}
-
-function mostrarCartaEnAdmin(carta) {
-    renderizarItemsPorCategoria(
-        document.getElementById('admin-carta-platos-container'),
-        carta.platos || [],
-        CATEGORIAS_CARTA.plato,
-        'plato'
+async function eliminarItemCarta(tipo, id, nombre) {
+    const confirmado = await UI.confirm(
+        'Dejará de aparecer en la carta pública.',
+        `¿Eliminar "${nombre}" del menú?`
     );
-    renderizarItemsPorCategoria(
-        document.getElementById('admin-carta-bebidas-container'),
-        carta.bebidas || [],
-        CATEGORIAS_CARTA.bebida,
-        'bebida'
-    );
-}
-
-function crearItemCardCarta(item, tipo) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'admin-carta-item';
-    wrapper.innerHTML = `
-        <div class="item-card">
-            <h4>${item.nombre}</h4>
-            <div class="precio">$${item.precio.toLocaleString()}</div>
-            <button type="button" class="btn-eliminar-carta" data-tipo="${tipo}" data-id="${item.id}">
-                Eliminar
-            </button>
-        </div>
-    `;
-
-    wrapper.querySelector('.btn-eliminar-carta').addEventListener('click', () => {
-        eliminarItemCarta(tipo, item.id, item.nombre);
-    });
-
-    return wrapper;
-}
-
-window.eliminarItemCarta = async function(tipo, id, nombre) {
-    if (!confirm(`¿Eliminar "${nombre}" del menú?`)) return;
+    if (!confirmado) return;
 
     try {
         await API.adminDeleteCartaItem(tipo, id);
@@ -378,8 +336,7 @@ window.eliminarItemCarta = async function(tipo, id, nombre) {
     } catch (error) {
         mostrarMensajeCarta(error.error || 'Error al eliminar el ítem', true);
     }
-};
+}
 
 // Cargar reservas al iniciar
 cargarTodasReservas();
-

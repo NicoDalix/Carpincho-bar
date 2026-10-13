@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/security.php';
 
 function getDB(): PDO
@@ -20,16 +20,6 @@ function getDB(): PDO
 function initDatabase(): void
 {
     $pdo = getDB();
-
-    // Intentos fallidos de login (bloqueo temporal)
-    $pdo->exec(
-        'CREATE TABLE IF NOT EXISTS login_intentos (
-            ip VARCHAR(45) NOT NULL PRIMARY KEY,
-            intentos INT NOT NULL DEFAULT 0,
-            bloqueado_hasta INT UNSIGNED NOT NULL DEFAULT 0,
-            ventana_inicio INT UNSIGNED NOT NULL DEFAULT 0
-        )'
-    );
 
     // Usuario admin por defecto
     $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE email = ? LIMIT 1');

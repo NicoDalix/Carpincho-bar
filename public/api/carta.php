@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/helpers.php';
-require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../app/helpers.php';
+require_once __DIR__ . '/../app/db.php';
 
 handleOptions();
 
@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 try {
-    initDatabase();
     $pdo = getDB();
 
     $platos = $pdo->query('SELECT id, nombre, precio, categoria FROM carta_platos ORDER BY id')->fetchAll();

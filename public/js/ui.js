@@ -22,7 +22,7 @@ const UI = {
         toast.setAttribute('role', 'alert');
         toast.innerHTML = `
             <span class="toast-icon" aria-hidden="true">${this._icon(type)}</span>
-            <span class="toast-text">${message}</span>
+            <span class="toast-text">${escapeHtml(message)}</span>
             <button class="toast-close" aria-label="Cerrar notificación">
                 <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/>
@@ -79,8 +79,8 @@ const UI = {
                         <path d="M9 13h6M9 16.25h4"/>
                     </svg>
                 </div>
-                <p class="empty-state-text">${message}</p>
-                ${hint ? `<p class="empty-state-hint">${hint}</p>` : ''}
+                <p class="empty-state-text">${escapeHtml(message)}</p>
+                ${hint ? `<p class="empty-state-hint">${escapeHtml(hint)}</p>` : ''}
             </div>
         `;
     },
@@ -95,18 +95,24 @@ const UI = {
             overlay.className = 'confirm-overlay';
             overlay.innerHTML = `
                 <div class="confirm-dialog" role="alertdialog" aria-labelledby="confirm-title" aria-modal="true">
-                    <h3 id="confirm-title">${title}</h3>
-                    <p>${message}</p>
+                    <h3 id="confirm-title">${escapeHtml(title)}</h3>
+                    <p>${escapeHtml(message)}</p>
                     <div class="confirm-actions">
-                        <button class="btn btn-secondary confirm-no">Cancelar</button>
-                        <button class="btn btn-primary confirm-yes">Confirmar</button>
+                        <button type="button" class="btn btn-secondary confirm-no">Cancelar</button>
+                        <button type="button" class="btn btn-primary confirm-yes">Confirmar</button>
                     </div>
                 </div>
             `;
             document.body.appendChild(overlay);
             overlay.querySelector('.confirm-yes').focus();
 
+            const onKeydown = (e) => {
+                if (e.key === 'Escape') close(false);
+            };
+
+            // Se cierre como se cierre, se saca el listener de Escape
             const close = (result) => {
+                document.removeEventListener('keydown', onKeydown);
                 overlay.remove();
                 resolve(result);
             };
@@ -116,12 +122,7 @@ const UI = {
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) close(false);
             });
-            document.addEventListener('keydown', function esc(e) {
-                if (e.key === 'Escape') {
-                    document.removeEventListener('keydown', esc);
-                    close(false);
-                }
-            });
+            document.addEventListener('keydown', onKeydown);
         });
     },
 

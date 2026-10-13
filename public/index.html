@@ -3,16 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Carta y reservas online del Restaurante El Carpincho Gourmet">
-    <title>Carta - Restaurante El Carpincho Gourmet</title>
-    <link rel="stylesheet" href="styles.css?v=2">
+    <meta name="description" content="Restaurante El Carpincho Gourmet: conocé nuestra carta de platos y bebidas y reservá tu mesa online en el salón, el sector exclusivo o el patio.">
+    <meta name="robots" content="index, follow">
+    <title>Restaurante El Carpincho Gourmet | Carta y reservas online</title>
+
+    <!-- Vista previa al compartir el enlace (Open Graph) -->
+    <meta property="og:type" content="restaurant">
+    <meta property="og:locale" content="es_AR">
+    <meta property="og:site_name" content="El Carpincho Gourmet">
+    <meta property="og:title" content="Restaurante El Carpincho Gourmet | Carta y reservas online">
+    <meta property="og:description" content="Conocé nuestra carta y reservá tu mesa online en segundos.">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#1a2332">
+    <link rel="stylesheet" href="css/styles.css?v=10">
 </head>
 <body>
     <a href="#contenido-principal" class="skip-link">Saltar al contenido</a>
 
     <header>
         <div class="container">
-            <h1 class="brand">
+            <a href="index.html" class="brand" aria-label="El Carpincho Gourmet - Inicio">
                 <span class="brand-mark" aria-hidden="true">
                     <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M3 18.25h18"/>
@@ -25,7 +35,7 @@
                     <span>El Carpincho</span>
                     <span class="brand-accent">Gourmet</span>
                 </span>
-            </h1>
+            </a>
             <nav id="nav-container" aria-label="Navegación principal">
                 <a href="index.html" class="active" aria-current="page">Carta</a>
                 <span id="nav-user-section"></span>
@@ -35,7 +45,7 @@
 
     <main id="contenido-principal" class="container">
         <section class="hero" aria-labelledby="hero-title">
-            <h2 id="hero-title">Sabores que cuentan historias</h2>
+            <h1 id="hero-title">Sabores que cuentan historias</h1>
             <p>Explorá nuestra carta gourmet y reservá tu mesa en segundos. Interior clásico, sector exclusivo o patio al aire libre.</p>
             <div class="hero-actions">
                 <a href="#carta" class="btn btn-primary">Ver carta</a>
@@ -50,26 +60,28 @@
             </div>
 
             <div class="carta-container">
-                <div class="categoria">
+                <section class="categoria">
                     <h3>Platos</h3>
                     <div id="platos-container" class="items-grid" aria-live="polite"></div>
-                </div>
+                </section>
 
-                <div class="categoria">
+                <section class="categoria">
                     <h3>Bebidas</h3>
                     <div id="bebidas-container" class="items-grid" aria-live="polite"></div>
-                </div>
+                </section>
             </div>
         </section>
     </main>
 
     <footer>
         <p>&copy; 2025 Restaurante El Carpincho Gourmet. Todos los derechos reservados.</p>
+        <p class="footer-academico">Universidad del Centro Educativo Latinoamericano (UCEL) · Ingeniería en Sistemas de Información · Entornos Web · Alumno: Nicolás Dalix</p>
     </footer>
 
-    <script src="api.js"></script>
-    <script src="ui.js?v=2"></script>
-    <script src="app.js"></script>
+    <script src="js/api.js?v=6"></script>
+    <script src="js/ui.js?v=6"></script>
+    <script src="js/carta.js?v=6"></script>
+    <script src="js/app.js?v=6"></script>
 </body>
 </html>
-
+

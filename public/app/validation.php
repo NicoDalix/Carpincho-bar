@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Valida que la contraseña cumpla los requisitos:
- * - Mínimo 8 caracteres
- * - Al menos una letra
- * - Al menos un número
- */
 function validatePassword(string $password): array
 {
     if (strlen($password) < 8) {

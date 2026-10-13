@@ -1,14 +1,4 @@
 <?php
-/**
- * Módulo de ciberseguridad - Hash de contraseñas con bcrypt
- *
- * bcrypt es un algoritmo de hash unidireccional diseñado para contraseñas.
- * Nunca se guarda la contraseña en texto plano: solo el hash.
- * Al iniciar sesión, password_verify() compara la contraseña ingresada con el hash.
- *
- * Cada hash incluye un "salt" aleatorio, por lo que dos contraseñas iguales
- * producen hashes distintos (protección contra tablas rainbow).
- */
 define('BCRYPT_COST', 12);
 
 function hashPassword(string $plainPassword): string
@@ -21,9 +11,16 @@ function verifyPassword(string $plainPassword, string $storedHash): bool
     return password_verify($plainPassword, $storedHash);
 }
 
+function sendSecurityHeaders(): void
+{
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+}
+
 define('LOGIN_MAX_INTENTOS', 5);
-define('LOGIN_BLOQUEO_SEGUNDOS', 300); // 5 minutos de bloqueo
-define('LOGIN_VENTANA_SEGUNDOS', 300); // los 5 fallos tienen que darse dentro de 5 minutos
+define('LOGIN_BLOQUEO_SEGUNDOS', 300); 
+define('LOGIN_VENTANA_SEGUNDOS', 300); 
 
 /** IP del cliente. No se usa X-Forwarded-For porque el cliente lo puede falsear. */
 function obtenerIp(): string

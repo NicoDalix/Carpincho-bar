@@ -1,0 +1,3 @@
+# Código interno (configuración, conexión, funciones). Los archivos de esta
+# carpeta se incluyen desde los endpoints de api/, nunca se piden directo.
+Require all denied

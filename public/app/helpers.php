@@ -1,12 +1,17 @@
 <?php
+require_once __DIR__ . '/config.php';
 
 function sendCorsHeaders(): void
 {
     require_once __DIR__ . '/security.php';
     sendSecurityHeaders();
-    header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    $origen = $_SERVER['HTTP_ORIGIN'] ?? '';
+    if ($origen !== '' && in_array($origen, CORS_ORIGENES, true)) {
+        header('Access-Control-Allow-Origin: ' . $origen);
+        header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    }
+    header('Vary: Origin');
     header('Content-Type: application/json; charset=utf-8');
 }
 
@@ -40,13 +45,6 @@ function getJsonBody(): array
     return is_array($data) ? $data : [];
 }
 
-/**
- * Obtiene el header Authorization de la petición.
- *
- * Según el servidor (mod_php, CGI/FastCGI) el header puede llegar en distintas
- * variables o directamente no estar en $_SERVER. Se prueban las tres fuentes
- * conocidas antes de darlo por ausente.
- */
 function getAuthorizationHeader(): string
 {
     $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';

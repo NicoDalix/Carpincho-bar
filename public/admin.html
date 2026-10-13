@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Panel de administración del restaurante">
+    <meta name="description" content="Panel de administración de reservas y carta de El Carpincho Gourmet.">
+    <meta name="robots" content="noindex, nofollow">
     <title>Administración - El Carpincho Gourmet</title>
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#1a2332">
+    <link rel="stylesheet" href="css/styles.css?v=10">
 </head>
 <body>
     <a href="#contenido-principal" class="skip-link">Saltar al contenido</a>
 
     <header>
         <div class="container">
-            <h1 class="brand">
+            <a href="index.html" class="brand" aria-label="El Carpincho Gourmet - Inicio">
                 <span class="brand-mark" aria-hidden="true">
                     <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M3 18.25h18"/>
@@ -25,7 +28,7 @@
                     <span>El Carpincho</span>
                     <span class="brand-accent">Administración</span>
                 </span>
-            </h1>
+            </a>
             <nav aria-label="Navegación de administrador">
                 <a href="index.html">Ver sitio</a>
                 <span id="admin-name"></span>
@@ -35,6 +38,7 @@
     </header>
 
     <main id="contenido-principal" class="container">
+        <h1 class="visually-hidden">Panel de administración</h1>
         <div class="admin-tabs">
             <button class="tab-btn active" data-tab="reservas">Todas las Reservas</button>
             <button class="tab-btn" data-tab="buscar">Buscar Reserva</button>
@@ -43,7 +47,7 @@
         </div>
 
         <!-- Sección: Todas las Reservas -->
-        <div id="reservas-section" class="admin-section active">
+        <section id="reservas-section" class="admin-section active">
             <h2>Todas las Reservas</h2>
             <div class="filtros-container">
                 <select id="filtro-estado" class="filtro-select">
@@ -54,10 +58,10 @@
                 <button id="refrescar-reservas" class="btn btn-primary">Refrescar</button>
             </div>
             <div id="todas-reservas-container" class="reservas-list"></div>
-        </div>
+        </section>
 
         <!-- Sección: Buscar Reserva -->
-        <div id="buscar-section" class="admin-section">
+        <section id="buscar-section" class="admin-section">
             <h2>Buscar Reserva por Nombre</h2>
             <div class="buscar-form-container">
                 <form id="buscar-form">
@@ -69,10 +73,10 @@
                 </form>
             </div>
             <div id="resultados-busqueda" class="reservas-list"></div>
-        </div>
+        </section>
 
         <!-- Sección: Crear Reserva -->
-        <div id="crear-section" class="admin-section">
+        <section id="crear-section" class="admin-section">
             <h2>Crear Reserva Manualmente</h2>
             <div class="crear-reserva-container">
                 <form id="crear-reserva-form">
@@ -111,10 +115,10 @@
                     <button type="submit" class="btn btn-primary">Crear Reserva</button>
                 </form>
             </div>
-        </div>
+        </section>
 
         <!-- Sección: Gestionar Carta -->
-        <div id="carta-section" class="admin-section">
+        <section id="carta-section" class="admin-section">
             <h2>Gestionar Carta</h2>
             <p class="section-desc">Agregá o eliminá platos y bebidas del menú. Los cambios se ven al instante en la carta pública.</p>
 
@@ -124,14 +128,14 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="carta-tipo">Tipo *</label>
-                            <select id="carta-tipo" required>
+                            <select id="carta-tipo">
                                 <option value="plato">Plato</option>
                                 <option value="bebida">Bebida</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="carta-categoria">Categoría *</label>
-                            <select id="carta-categoria" required></select>
+                            <select id="carta-categoria"></select>
                         </div>
                     </div>
                     <div class="form-row">
@@ -150,26 +154,28 @@
             </div>
 
             <div class="carta-container">
-                <div class="categoria">
+                <section class="categoria">
                     <h3>Platos</h3>
                     <div id="admin-carta-platos-container"></div>
-                </div>
+                </section>
 
-                <div class="categoria">
+                <section class="categoria">
                     <h3>Bebidas</h3>
                     <div id="admin-carta-bebidas-container"></div>
-                </div>
+                </section>
             </div>
-        </div>
+        </section>
     </main>
 
     <footer>
         <p>&copy; 2025 Restaurante El Carpincho Gourmet. Todos los derechos reservados.</p>
+        <p class="footer-academico">Universidad del Centro Educativo Latinoamericano (UCEL) · Ingeniería en Sistemas de Información · Entornos Web · Alumno: Nicolás Dalix</p>
     </footer>
 
-    <script src="api.js"></script>
-    <script src="ui.js?v=2"></script>
-    <script src="admin.js"></script>
+    <script src="js/api.js?v=6"></script>
+    <script src="js/ui.js?v=6"></script>
+    <script src="js/carta.js?v=6"></script>
+    <script src="js/admin.js?v=6"></script>
 </body>
 </html>
 

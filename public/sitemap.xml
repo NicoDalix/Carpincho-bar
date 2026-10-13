@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Páginas públicas del sitio. Al publicarlo, reemplazar la URL base por el dominio real. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>http://localhost/ucel-isi-ew-2025-tf-dalix-nicolas/public/index.html</loc>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+</urlset>

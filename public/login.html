@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Iniciá sesión o registrate en El Carpincho Gourmet">
+    <meta name="description" content="Iniciá sesión o creá tu cuenta en El Carpincho Gourmet para reservar tu mesa online.">
+    <meta name="robots" content="noindex, follow">
     <title>Iniciar Sesión - El Carpincho Gourmet</title>
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#1a2332">
+    <link rel="stylesheet" href="css/styles.css?v=10">
 </head>
 <body>
     <a href="#contenido-principal" class="skip-link">Saltar al contenido</a>
 
     <header>
         <div class="container">
-            <h1 class="brand">
+            <a href="index.html" class="brand" aria-label="El Carpincho Gourmet - Inicio">
                 <span class="brand-mark" aria-hidden="true">
                     <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M3 18.25h18"/>
@@ -25,7 +28,7 @@
                     <span>El Carpincho</span>
                     <span class="brand-accent">Gourmet</span>
                 </span>
-            </h1>
+            </a>
             <nav aria-label="Navegación principal">
                 <a href="index.html">Carta</a>
                 <a href="login.html" class="active" aria-current="page">Iniciar Sesión</a>
@@ -34,6 +37,7 @@
     </header>
 
     <main id="contenido-principal" class="container">
+        <h1 class="visually-hidden">Ingresar a El Carpincho Gourmet</h1>
         <div class="auth-container">
             <div class="auth-tabs" role="tablist" aria-label="Opciones de acceso">
                 <button class="tab-btn active" data-tab="login" role="tab" aria-selected="true" aria-controls="login-form">Iniciar Sesión</button>
@@ -42,18 +46,18 @@
 
             <div id="login-form" class="auth-form active" role="tabpanel">
                 <h2>Iniciar Sesión</h2>
-                <p class="form-hint" style="margin-bottom: 1.25rem;">Ingresá con tu email y contraseña para reservar mesas.</p>
+                <p class="form-hint form-intro">Ingresá con tu email y contraseña para reservar mesas.</p>
                 <form id="loginForm" novalidate>
                     <div class="form-group">
                         <label for="login-email">Email</label>
                         <input type="email" id="login-email" required autocomplete="email"
-                               placeholder="tu@email.com" aria-required="true">
+                               placeholder="tu@email.com">
                     </div>
                     <div class="form-group">
                         <label for="login-password">Contraseña</label>
                         <div class="input-with-toggle">
                             <input type="password" id="login-password" required autocomplete="current-password"
-                                   placeholder="Tu contraseña" aria-required="true">
+                                   placeholder="Tu contraseña">
                             <button type="button" class="btn-toggle-password" id="toggle-login-password"
                                     aria-label="Mostrar contraseña">Mostrar</button>
                         </div>
@@ -65,24 +69,24 @@
 
             <div id="register-form" class="auth-form" role="tabpanel">
                 <h2>Crear cuenta</h2>
-                <p class="form-hint" style="margin-bottom: 1.25rem;">Registrate para hacer reservas online de forma segura.</p>
+                <p class="form-hint form-intro">Registrate para hacer reservas online de forma segura.</p>
                 <form id="registerForm" novalidate>
                     <div class="form-group">
                         <label for="register-nombre">Nombre completo</label>
                         <input type="text" id="register-nombre" required autocomplete="name"
-                               placeholder="Ej: Juan Pérez" minlength="2" aria-required="true">
+                               placeholder="Ej: Juan Pérez" minlength="2">
                     </div>
                     <div class="form-group">
                         <label for="register-email">Email</label>
                         <input type="email" id="register-email" required autocomplete="email"
-                               placeholder="tu@email.com" aria-required="true">
+                               placeholder="tu@email.com">
                     </div>
                     <div class="form-group">
                         <label for="register-password">Contraseña</label>
                         <div class="input-with-toggle">
                             <input type="password" id="register-password" required minlength="8"
                                    autocomplete="new-password" placeholder="Mínimo 8 caracteres"
-                                   aria-describedby="password-requirements" aria-required="true">
+                                   aria-describedby="password-requirements">
                             <button type="button" class="btn-toggle-password" id="toggle-register-password"
                                     aria-label="Mostrar contraseña">Mostrar</button>
                         </div>
@@ -115,12 +119,13 @@
 
     <footer>
         <p>&copy; 2025 Restaurante El Carpincho Gourmet. Todos los derechos reservados.</p>
+        <p class="footer-academico">Universidad del Centro Educativo Latinoamericano (UCEL) · Ingeniería en Sistemas de Información · Entornos Web · Alumno: Nicolás Dalix</p>
     </footer>
 
-    <script src="api.js"></script>
-    <script src="ui.js?v=2"></script>
-    <script src="password-validation.js"></script>
-    <script src="auth.js"></script>
+    <script src="js/api.js?v=6"></script>
+    <script src="js/ui.js?v=6"></script>
+    <script src="js/password-validation.js?v=6"></script>
+    <script src="js/auth.js?v=6"></script>
 </body>
 </html>
 

@@ -5,3 +5,9 @@
 <IfModule mod_setenvif.c>
     SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 </IfModule>
+
+# Archivos internos que nunca deben poder pedirse desde el navegador:
+# el secreto de los tokens, el esquema de la base y la documentación.
+<FilesMatch "^(jwt-secret\.php|schema\.sql|.*\.md)$">
+    Require all denied
+</FilesMatch>

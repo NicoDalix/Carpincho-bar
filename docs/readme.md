@@ -27,7 +27,7 @@ Editá `api/config.php` si tus credenciales de MySQL son distintas:
 
 ```php
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'restaurante_db');
+define('DB_NAME', 'el_carpincho_gourmet');
 define('DB_USER', 'root');
 define('DB_PASS', '');  // vacío por defecto en XAMPP
 ```
@@ -40,7 +40,7 @@ Abrí en el navegador:
 http://localhost/Nuevo%20proyecto/database/install.php
 ```
 
-Esto crea la base de datos, las tablas y los datos iniciales (admin, mesas, carta).
+Esto crea la base de datos (con el nombre de `DB_NAME`), las tablas y los datos iniciales (admin, mesas, carta).
 
 ### 5. Usar la aplicación
 

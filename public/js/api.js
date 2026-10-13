@@ -1,5 +1,13 @@
 // API del backend PHP + MySQL
-const API_BASE = '../api';
+const API_BASE = 'api';
+function escapeHtml(valor) {
+    return String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
  
 function getToken() {
     return localStorage.getItem('token');
@@ -74,7 +82,7 @@ const API = {
     getReservas: () => apiRequest('/reservas.php'),
  
     cancelReserva: (reservaId) =>
-        apiRequest(`/reservas_cancelar.php?id=${reservaId}`, { method: 'POST' }),
+        apiRequest(`/reservas-cancelar.php?id=${reservaId}`, { method: 'POST' }),
  
     adminGetReservas: () => apiRequest('/admin/reservas.php'),
  
@@ -106,5 +114,6 @@ const API = {
     adminDeleteCartaItem: (tipo, id) =>
         apiRequest(`/admin/carta.php?tipo=${tipo}&id=${id}`, { method: 'DELETE' }),
  
-    adminGetMesas: () => apiRequest('/admin/mesas.php'),
+    adminGetMesas: (fechaHora) =>
+        apiRequest(`/admin/mesas.php${fechaHora ? `?fechaHora=${encodeURIComponent(fechaHora)}` : ''}`),
 };

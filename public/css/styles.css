@@ -15,8 +15,10 @@
     /* --- Paleta base --- */
     --primary-color: #c9a227;
     --primary-dark: #a8861f;
+    --primary-text: #866a12; /* dorado para texto: contraste AA (4,5:1) */
     --secondary-color: #1a2332;
     --accent-color: #d64545;
+    --accent-text: #b83232; /* rojo para texto: contraste AA (4,5:1) */
     --success-color: #2d8a5e;
     --warning-color: #e6a23c;
     --bg-color: #f4f6f9;
@@ -80,8 +82,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ==========================================================================
@@ -142,7 +142,7 @@ body {
     height: 1px;
     padding: 0;
     overflow: hidden;
-    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
     white-space: nowrap;
     border: 0;
 }
@@ -202,6 +202,8 @@ header .container {
 
 /* --- Logotipo --- */
 .brand {
+    color: inherit;
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
@@ -317,7 +319,8 @@ nav a.active::after {
 }
 
 #user-name,
-#admin-name {
+#admin-name,
+.nav-saludo {
     color: rgba(255, 255, 255, 0.92);
     padding: 0.35rem 0.85rem;
     font-weight: 500;
@@ -354,6 +357,12 @@ footer {
     border-top: 2px solid var(--primary-dark);
 }
 
+.footer-academico {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
 /* ==========================================================================
    Hero
    ========================================================================== */
@@ -382,7 +391,7 @@ footer {
     pointer-events: none;
 }
 
-.hero h2 {
+.hero h1 {
     font-size: clamp(1.65rem, 4.5vw, 2.5rem);
     margin-bottom: 0.85rem;
     font-weight: 700;
@@ -470,7 +479,7 @@ footer {
 }
 
 .intro-text a {
-    color: var(--primary-dark);
+    color: var(--primary-text);
     text-decoration: none;
     font-weight: 600;
     border-bottom: 1px solid var(--primary-glow);
@@ -579,11 +588,35 @@ footer {
 }
 
 .item-card .precio {
-    color: var(--primary-dark);
+    color: var(--primary-text);
     font-size: 1.2rem;
     font-weight: 700;
-    margin-top: 0.5rem;
+    margin: 0.5rem 0 0;
     font-variant-numeric: tabular-nums;
+}
+
+/* --- Textos auxiliares (antes eran estilos en línea en el JS/HTML) --- */
+.form-intro {
+    margin-bottom: 1.25rem;
+}
+
+.reserva-nota {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+}
+
+.reserva-nota-reembolso {
+    color: var(--success-color);
+    margin-top: 0.5rem;
+}
+
+.mensaje-error-carga {
+    color: var(--accent-text);
+    background: var(--accent-tint);
+    border: 1px solid var(--accent-border);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
 }
 
 /* ==========================================================================
@@ -738,7 +771,6 @@ footer {
 .form-group select,
 .filtro-select {
     appearance: none;
-    -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23636e72' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.9rem center;
@@ -791,7 +823,7 @@ footer {
 
 .btn-toggle-password:hover {
     background: var(--primary-tint);
-    color: var(--primary-dark);
+    color: var(--primary-text);
 }
 
 /* --- Requisitos de contraseña --- */
@@ -941,7 +973,7 @@ footer {
 
 .btn-cancelar {
     background-color: var(--surface);
-    color: var(--accent-color);
+    color: var(--accent-text);
     border: 1.5px solid var(--accent-border);
     padding: 0.55rem 1.1rem;
     border-radius: var(--radius-sm);
@@ -958,8 +990,8 @@ footer {
 }
 
 .btn-cancelar:hover:not(:disabled) {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
+    background-color: var(--accent-text);
+    border-color: var(--accent-text);
     color: #fff;
 }
 
@@ -1007,6 +1039,8 @@ footer {
    ========================================================================== */
 
 .steps-guide {
+    list-style: none;
+    padding: 0;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 1rem;
@@ -1071,6 +1105,60 @@ footer {
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: var(--tracking-tight);
+}
+
+/* --- Filtro de búsqueda de mesas --- */
+.busqueda-campos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.busqueda-campos .form-group {
+    margin-bottom: 0;
+}
+
+/* Los campos de fecha/hora nunca muestran placeholder, así que la regla
+   general de :invalid los pintaba de rojo apenas carga la página. Acá los
+   errores se informan con el mensaje debajo del formulario. */
+.busqueda-campos .form-group input:invalid:not(:placeholder-shown):not(:focus) {
+    border-color: var(--border-color);
+}
+
+.busqueda-accion .btn {
+    white-space: nowrap;
+}
+
+.busqueda-placeholder {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1.5px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.busqueda-placeholder[hidden],
+.sectores-container[hidden] {
+    display: none;
+}
+
+.resultados-resumen {
+    margin: 0;
+    padding: 0.9rem 1.25rem;
+    background: var(--success-tint);
+    border: 1px solid var(--success-border);
+    border-radius: var(--radius);
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.sector-sin-mesas {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
 }
 
 .mesa-legend {
@@ -1152,7 +1240,7 @@ footer {
 }
 
 .tarifa-info {
-    color: var(--primary-dark);
+    color: var(--primary-text);
     font-weight: 600;
     margin-bottom: 1.5rem;
     font-size: 0.92rem;
@@ -1269,7 +1357,7 @@ footer {
 
 .mesa-tarifa {
     font-size: 0.8rem;
-    color: var(--primary-dark);
+    color: var(--primary-text);
     font-weight: 700;
     margin-top: 0.45rem;
     font-variant-numeric: tabular-nums;
@@ -1452,7 +1540,7 @@ footer {
     bottom: 0.9rem;
     right: 0.9rem;
     background: transparent;
-    color: var(--accent-color);
+    color: var(--accent-text);
     border: 1.5px solid var(--accent-border);
     padding: 0.35rem 0.8rem;
     border-radius: var(--radius-sm);
@@ -1465,8 +1553,8 @@ footer {
 }
 
 .admin-carta-item .btn-eliminar-carta:hover {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
+    background: var(--accent-text);
+    border-color: var(--accent-text);
     color: #fff;
 }
 
@@ -1532,7 +1620,7 @@ footer {
 
 .close-modal:hover {
     background: var(--accent-tint);
-    color: var(--accent-color);
+    color: var(--accent-text);
 }
 
 .modal-content h3 {
@@ -1608,7 +1696,7 @@ footer {
     margin-bottom: 1.25rem;
     border-radius: 50%;
     background: var(--primary-tint);
-    color: var(--primary-dark);
+    color: var(--primary-text);
 }
 
 .empty-state-icon .icon {
@@ -1882,6 +1970,7 @@ footer {
 
     .nav-toggle {
         display: flex;
+        order: 2;
     }
 
     header .container {
@@ -1889,7 +1978,9 @@ footer {
         position: relative;
     }
 
+    /* El menú desplegado va debajo del logo y del botón, no entre ellos */
     header nav {
+        order: 3;
         display: none;
         flex-direction: column;
         width: 100%;
@@ -1907,13 +1998,28 @@ footer {
     nav a,
     nav button,
     #user-name,
-    #admin-name {
+    #admin-name,
+    .nav-saludo {
         width: 100%;
         justify-content: center;
         text-align: center;
     }
 
     nav a.active::after {
+        display: none;
+    }
+
+    /* Los accesos que agrega el JS en la portada se apilan igual que el resto */
+    #nav-user-section {
+        display: contents;
+    }
+
+    /* En tarjetas angostas, "6 personas" en una sola línea y sin ícono */
+    .mesa-capacidad {
+        white-space: nowrap;
+    }
+
+    .mesa-capacidad::before {
         display: none;
     }
 

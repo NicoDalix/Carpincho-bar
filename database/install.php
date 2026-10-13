@@ -3,9 +3,17 @@
  * Script de instalación: crea las tablas e inserta datos iniciales.
  * Ejecutar una vez: http://localhost/tu-proyecto/database/install.php
  */
-require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/../public/app/config.php';
 
 header('Content-Type: text/html; charset=utf-8');
+
+// Solo se puede ejecutar desde la misma máquina del servidor (o por consola).
+// Si el sitio queda publicado, nadie de afuera puede reinstalar ni ver datos.
+$ipCliente = $_SERVER['REMOTE_ADDR'] ?? '';
+if (PHP_SAPI !== 'cli' && !in_array($ipCliente, ['127.0.0.1', '::1'], true)) {
+    http_response_code(403);
+    exit('Acceso denegado: la instalación solo puede ejecutarse desde el servidor.');
+}
 
 $messages = [];
 
@@ -16,6 +24,11 @@ try {
         DB_PASS,
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
+
+    // El nombre sale de config.php, el mismo que usa getDB() para conectarse.
+    $dbName = str_replace('`', '``', DB_NAME);
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $pdo->exec("USE `$dbName`");
 
     $schema = file_get_contents(__DIR__ . '/schema.sql');
     $statements = array_filter(array_map('trim', explode(';', $schema)));
@@ -28,10 +41,11 @@ try {
 
     $messages[] = 'Base de datos y tablas creadas correctamente.';
 
-    require_once __DIR__ . '/../includes/db.php';
+    require_once __DIR__ . '/../public/app/db.php';
     initDatabase();
     $messages[] = 'Datos iniciales insertados (admin, mesas, carta).';
-    $messages[] = 'Admin: ' . ADMIN_EMAIL . ' / ' . ADMIN_PASSWORD;
+    // La contraseña no se muestra: está en public/app/config.php (ADMIN_PASSWORD).
+    $messages[] = 'Usuario administrador: ' . htmlspecialchars(ADMIN_EMAIL);
 } catch (PDOException $e) {
     $messages[] = 'Error: ' . htmlspecialchars($e->getMessage());
 }

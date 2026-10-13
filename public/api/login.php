@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/../includes/helpers.php';
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/validation.php';
-require_once __DIR__ . '/../includes/jwt.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../app/helpers.php';
+require_once __DIR__ . '/../app/db.php';
+require_once __DIR__ . '/../app/validation.php';
+require_once __DIR__ . '/../app/jwt.php';
+require_once __DIR__ . '/../app/security.php';
 
 handleOptions();
 
@@ -26,7 +26,6 @@ function respuestaBloqueado(int $segundos): void
 }
 
 try {
-    initDatabase();
     $body = getJsonBody();
 
     $email = trim(strtolower($body['email'] ?? ''));

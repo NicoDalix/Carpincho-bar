@@ -1,41 +1,34 @@
 <?php
-require_once __DIR__ . '/../../includes/helpers.php';
-require_once __DIR__ . '/../../includes/db.php';
-require_once __DIR__ . '/../../includes/security.php';
+require_once __DIR__ . '/../../app/helpers.php';
+require_once __DIR__ . '/../../app/db.php';
+require_once __DIR__ . '/../../app/security.php';
+require_once __DIR__ . '/../../app/reservas.php';
 
 handleOptions();
 requireAdmin();
 
 try {
-    initDatabase();
     $pdo = getDB();
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        // La tarifa de la mesa va con alias para no pisar r.tarifa_minima
+        // (la tarifa que se cobró al momento de reservar).
+        $select = "SELECT r.*, m.numero, m.sector, m.capacidad, m.tarifa_minima AS mesa_tarifa_minima,
+                          u.nombre AS usuario_nombre, u.email AS usuario_email
+                   FROM reservas r
+                   JOIN mesas m ON m.id = r.mesa_id
+                   JOIN usuarios u ON u.id = r.usuario_id";
+
         if (isset($_GET['nombre'])) {
             $nombre = trim($_GET['nombre']);
             if ($nombre === '') {
                 jsonError('Debe proporcionar un nombre para buscar');
             }
 
-            $stmt = $pdo->prepare(
-                "SELECT r.*, m.numero, m.sector, m.capacidad, m.tarifa_minima,
-                        u.nombre AS usuario_nombre, u.email AS usuario_email
-                 FROM reservas r
-                 JOIN mesas m ON m.id = r.mesa_id
-                 JOIN usuarios u ON u.id = r.usuario_id
-                 WHERE u.nombre LIKE ?
-                 ORDER BY r.fecha_hora DESC"
-            );
+            $stmt = $pdo->prepare("$select WHERE u.nombre LIKE ? ORDER BY r.fecha_hora DESC");
             $stmt->execute(['%' . $nombre . '%']);
         } else {
-            $stmt = $pdo->query(
-                "SELECT r.*, m.numero, m.sector, m.capacidad, m.tarifa_minima,
-                        u.nombre AS usuario_nombre, u.email AS usuario_email
-                 FROM reservas r
-                 JOIN mesas m ON m.id = r.mesa_id
-                 JOIN usuarios u ON u.id = r.usuario_id
-                 ORDER BY r.fecha_hora DESC"
-            );
+            $stmt = $pdo->query("$select ORDER BY r.fecha_hora DESC");
         }
 
         $reservas = $stmt->fetchAll();
@@ -56,48 +49,54 @@ try {
             jsonError('Datos de reserva incompletos');
         }
 
-        $stmtMesa = $pdo->prepare('SELECT * FROM mesas WHERE id = ? LIMIT 1');
-        $stmtMesa->execute([$mesaId]);
-        $mesa = $stmtMesa->fetch();
+        $timestamp = parsearFechaReserva($fechaHora);
+        $fechaMysql = date('Y-m-d H:i:s', $timestamp);
 
-        if (!$mesa) {
-            jsonError('Mesa no encontrada', 404);
-        }
+        // Se valida la mesa ANTES de crear/actualizar el usuario, y todo va en
+        // la misma transacción: si la reserva se rechaza no queda un usuario
+        // huérfano creado.
+        $pdo->beginTransaction();
+        try {
+            $mesa = validarReservaMesa($pdo, $mesaId, $timestamp, $cantidadPersonas);
 
-        $fechaMysql = date('Y-m-d H:i:s', strtotime($fechaHora));
+            $usuarioId = null;
 
-        $stmtExiste = $pdo->prepare(
-            "SELECT id FROM reservas
-             WHERE mesa_id = ? AND fecha_hora = ? AND estado = 'confirmada' LIMIT 1"
-        );
-        $stmtExiste->execute([$mesaId, $fechaMysql]);
-        if ($stmtExiste->fetch()) {
-            jsonError('La mesa ya está reservada en ese horario');
-        }
+            if ($emailCliente !== '') {
+                $stmtUser = $pdo->prepare('SELECT id FROM usuarios WHERE email = ? LIMIT 1');
+                $stmtUser->execute([$emailCliente]);
+                $usuario = $stmtUser->fetch();
 
-        $usuarioId = null;
-
-        if ($emailCliente !== '') {
-            $stmtUser = $pdo->prepare('SELECT id FROM usuarios WHERE email = ? LIMIT 1');
-            $stmtUser->execute([$emailCliente]);
-            $usuario = $stmtUser->fetch();
-
-            if ($usuario) {
-                $usuarioId = (int) $usuario['id'];
-                if ($nombreCliente !== '' || $telefono !== '') {
-                    $updateUser = $pdo->prepare(
-                        'UPDATE usuarios SET nombre = COALESCE(NULLIF(?, ""), nombre),
-                         telefono = COALESCE(NULLIF(?, ""), telefono) WHERE id = ?'
+                if ($usuario) {
+                    $usuarioId = (int) $usuario['id'];
+                    if ($nombreCliente !== '' || $telefono !== '') {
+                        $updateUser = $pdo->prepare(
+                            'UPDATE usuarios SET nombre = COALESCE(NULLIF(?, ""), nombre),
+                             telefono = COALESCE(NULLIF(?, ""), telefono) WHERE id = ?'
+                        );
+                        $updateUser->execute([$nombreCliente, $telefono, $usuarioId]);
+                    }
+                } else {
+                    $tempPassword = hashPassword(bin2hex(random_bytes(8)));
+                    $insertUser = $pdo->prepare(
+                        'INSERT INTO usuarios (email, password, nombre, telefono, rol) VALUES (?, ?, ?, ?, ?)'
                     );
-                    $updateUser->execute([$nombreCliente, $telefono, $usuarioId]);
+                    $insertUser->execute([
+                        $emailCliente,
+                        $tempPassword,
+                        $nombreCliente !== '' ? $nombreCliente : 'Cliente',
+                        $telefono !== '' ? $telefono : null,
+                        'usuario',
+                    ]);
+                    $usuarioId = (int) $pdo->lastInsertId();
                 }
             } else {
+                $tempEmail = 'temp_' . time() . '@temp.com';
                 $tempPassword = hashPassword(bin2hex(random_bytes(8)));
                 $insertUser = $pdo->prepare(
                     'INSERT INTO usuarios (email, password, nombre, telefono, rol) VALUES (?, ?, ?, ?, ?)'
                 );
                 $insertUser->execute([
-                    $emailCliente,
+                    $tempEmail,
                     $tempPassword,
                     $nombreCliente !== '' ? $nombreCliente : 'Cliente',
                     $telefono !== '' ? $telefono : null,
@@ -105,45 +104,38 @@ try {
                 ]);
                 $usuarioId = (int) $pdo->lastInsertId();
             }
-        } else {
-            $tempEmail = 'temp_' . time() . '@temp.com';
-            $tempPassword = hashPassword(bin2hex(random_bytes(8)));
-            $insertUser = $pdo->prepare(
-                'INSERT INTO usuarios (email, password, nombre, telefono, rol) VALUES (?, ?, ?, ?, ?)'
+
+            $insert = $pdo->prepare(
+                'INSERT INTO reservas (usuario_id, mesa_id, fecha_hora, cantidad_personas, tarifa_minima,
+                 estado, creada_por_admin, nombre_cliente, telefono)
+                 VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)'
             );
-            $insertUser->execute([
-                $tempEmail,
-                $tempPassword,
-                $nombreCliente !== '' ? $nombreCliente : 'Cliente',
+            $insert->execute([
+                $usuarioId,
+                $mesaId,
+                $fechaMysql,
+                $cantidadPersonas,
+                $mesa['tarifa_minima'],
+                'confirmada',
+                $nombreCliente !== '' ? $nombreCliente : null,
                 $telefono !== '' ? $telefono : null,
-                'usuario',
             ]);
-            $usuarioId = (int) $pdo->lastInsertId();
+            $reservaId = (int) $pdo->lastInsertId();
+
+            $pdo->commit();
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            if ($e instanceof ReservaException) {
+                jsonError($e->getMessage(), $e->getCode());
+            }
+            throw $e;
         }
-
-        $insert = $pdo->prepare(
-            'INSERT INTO reservas (usuario_id, mesa_id, fecha_hora, cantidad_personas, tarifa_minima,
-             estado, creada_por_admin, nombre_cliente, telefono)
-             VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)'
-        );
-        $insert->execute([
-            $usuarioId,
-            $mesaId,
-            $fechaMysql,
-            $cantidadPersonas,
-            $mesa['tarifa_minima'],
-            'confirmada',
-            $nombreCliente !== '' ? $nombreCliente : null,
-            $telefono !== '' ? $telefono : null,
-        ]);
-
-        $reservaId = (int) $pdo->lastInsertId();
 
         jsonResponse([
             'id' => $reservaId,
             'usuarioId' => $usuarioId,
             'mesaId' => $mesaId,
-            'fechaHora' => date('c', strtotime($fechaMysql)),
+            'fechaHora' => date('c', $timestamp),
             'cantidadPersonas' => $cantidadPersonas,
             'tarifaMinima' => (float) $mesa['tarifa_minima'],
             'estado' => 'confirmada',
@@ -193,6 +185,8 @@ function formatReservaAdmin(array $r): array
         'tarifaMinima' => (float) $r['tarifa_minima'],
         'estado' => $r['estado'],
         'fechaCreacion' => date('c', strtotime($r['fecha_creacion'])),
+        'reembolso' => $r['reembolso'] !== null ? (float) $r['reembolso'] : null,
+        'porcentajeReembolso' => $r['porcentaje_reembolso'] !== null ? (int) $r['porcentaje_reembolso'] : null,
         'creadaPorAdmin' => (bool) ($r['creada_por_admin'] ?? false),
         'nombreCliente' => $r['nombre_cliente'],
         'telefono' => $r['telefono'],
@@ -201,7 +195,7 @@ function formatReservaAdmin(array $r): array
             'numero' => (int) $r['numero'],
             'sector' => $r['sector'],
             'capacidad' => (int) $r['capacidad'],
-            'tarifaMinima' => (float) $r['tarifa_minima'],
+            'tarifaMinima' => (float) $r['mesa_tarifa_minima'],
         ] : null,
         'usuario' => isset($r['usuario_nombre']) ? [
             'nombre' => $r['usuario_nombre'],

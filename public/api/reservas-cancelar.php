@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/helpers.php';
-require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../app/helpers.php';
+require_once __DIR__ . '/../app/db.php';
 
 handleOptions();
 $user = requireAuth();
@@ -15,7 +15,6 @@ if ($reservaId <= 0) {
 }
 
 try {
-    initDatabase();
     $pdo = getDB();
 
     $stmt = $pdo->prepare(

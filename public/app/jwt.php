@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/config.php';
 
 function base64UrlEncode(string $data): string
 {

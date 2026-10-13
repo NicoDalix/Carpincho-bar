@@ -1,6 +1,8 @@
--- Base de datos del restaurante
-CREATE DATABASE IF NOT EXISTS restaurante_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE restaurante_db;
+-- Tablas de El Carpincho Gourmet.
+--
+-- No crea ni selecciona la base: install.php la crea con el nombre definido
+-- en DB_NAME (api/config.php), que es la única fuente de ese nombre. Para
+-- importarlo a mano (phpMyAdmin), seleccioná primero esa base.
 
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
