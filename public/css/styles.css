@@ -1,8 +1,3 @@
-/* ==========================================================================
-   El Carpincho Gourmet — Hoja de estilos
-   Paleta: dorado (#c9a227) sobre azul marino (#1a2332)
-   ========================================================================== */
-
 *,
 *::before,
 *::after {
@@ -12,13 +7,12 @@
 }
 
 :root {
-    /* --- Paleta base --- */
     --primary-color: #c9a227;
     --primary-dark: #a8861f;
-    --primary-text: #866a12; /* dorado para texto: contraste AA (4,5:1) */
+    --primary-text: #866a12;
     --secondary-color: #1a2332;
     --accent-color: #d64545;
-    --accent-text: #b83232; /* rojo para texto: contraste AA (4,5:1) */
+    --accent-text: #b83232;
     --success-color: #2d8a5e;
     --warning-color: #e6a23c;
     --bg-color: #f4f6f9;
@@ -26,7 +20,6 @@
     --text-muted: #636e72;
     --border-color: #dfe6e9;
 
-    /* --- Derivados de la paleta (tintes y sombras de los mismos tonos) --- */
     --primary-light: #e0be55;
     --primary-tint: #faf5e4;
     --primary-glow: rgba(201, 162, 39, 0.28);
@@ -41,12 +34,10 @@
     --info-tint: #eaf3fa;
     --info-border: #bcd8ec;
 
-    /* --- Superficies --- */
     --surface: #ffffff;
     --surface-alt: #fafbfc;
     --surface-sunken: #f1f4f8;
 
-    /* --- Elevación --- */
     --shadow-xs: 0 1px 2px rgba(26, 35, 50, 0.06);
     --shadow-sm: 0 1px 3px rgba(26, 35, 50, 0.07), 0 1px 2px rgba(26, 35, 50, 0.04);
     --shadow: 0 2px 12px rgba(26, 35, 50, 0.08);
@@ -54,20 +45,17 @@
     --shadow-lg: 0 8px 30px rgba(26, 35, 50, 0.12);
     --shadow-xl: 0 18px 48px rgba(26, 35, 50, 0.18);
 
-    /* --- Geometría --- */
     --radius-sm: 8px;
     --radius: 12px;
     --radius-lg: 18px;
     --radius-full: 999px;
 
-    /* --- Tipografía --- */
     --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
     --font-size-base: 1rem;
     --line-height: 1.6;
     --tracking-tight: -0.02em;
     --tracking-wide: 0.08em;
 
-    /* --- Interacción --- */
     --focus-ring: 0 0 0 3px rgba(201, 162, 39, 0.45);
     --transition: 0.2s ease;
     --transition-slow: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
@@ -83,10 +71,6 @@ body {
     display: flex;
     flex-direction: column;
 }
-
-/* ==========================================================================
-   Sistema de íconos SVG
-   ========================================================================== */
 
 .icon {
     width: 1em;
@@ -105,10 +89,6 @@ body {
     fill: currentColor;
     stroke: none;
 }
-
-/* ==========================================================================
-   Accesibilidad
-   ========================================================================== */
 
 .skip-link {
     position: absolute;
@@ -147,10 +127,6 @@ body {
     border: 0;
 }
 
-/* ==========================================================================
-   Layout
-   ========================================================================== */
-
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -162,10 +138,6 @@ main {
     flex: 1;
     padding: 2.5rem 0 3.5rem;
 }
-
-/* ==========================================================================
-   Encabezado y marca
-   ========================================================================== */
 
 header {
     background:
@@ -200,7 +172,6 @@ header .container {
     gap: 1rem;
 }
 
-/* --- Logotipo --- */
 .brand {
     color: inherit;
     text-decoration: none;
@@ -250,7 +221,6 @@ header .container {
     line-height: 1.1;
 }
 
-/* --- Navegación --- */
 .nav-toggle {
     display: none;
     flex-direction: column;
@@ -343,10 +313,6 @@ header .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.22);
 }
 
-/* ==========================================================================
-   Pie de página
-   ========================================================================== */
-
 footer {
     background-color: var(--secondary-color);
     color: rgba(255, 255, 255, 0.65);
@@ -362,10 +328,6 @@ footer {
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
 }
-
-/* ==========================================================================
-   Hero
-   ========================================================================== */
 
 .hero {
     background:
@@ -429,10 +391,6 @@ footer {
     background: rgba(255, 255, 255, 0.18);
 }
 
-/* ==========================================================================
-   Encabezados de sección
-   ========================================================================== */
-
 .page-header {
     margin-bottom: 1.75rem;
 }
@@ -453,10 +411,6 @@ footer {
     color: var(--text-muted);
     margin-bottom: 1.5rem;
 }
-
-/* ==========================================================================
-   Carta
-   ========================================================================== */
 
 .carta-section {
     background: var(--surface);
@@ -595,7 +549,6 @@ footer {
     font-variant-numeric: tabular-nums;
 }
 
-/* --- Textos auxiliares (antes eran estilos en línea en el JS/HTML) --- */
 .form-intro {
     margin-bottom: 1.25rem;
 }
@@ -618,10 +571,6 @@ footer {
     padding: 1rem;
     border-radius: var(--radius-sm);
 }
-
-/* ==========================================================================
-   Autenticación
-   ========================================================================== */
 
 .auth-container {
     max-width: 520px;
@@ -657,10 +606,6 @@ footer {
     letter-spacing: var(--tracking-tight);
     margin-bottom: 0.2rem;
 }
-
-/* ==========================================================================
-   Pestañas
-   ========================================================================== */
 
 .tab-btn {
     flex: 1;
@@ -710,10 +655,6 @@ footer {
     display: block;
     animation: fadeInUp 0.32s ease;
 }
-
-/* ==========================================================================
-   Formularios
-   ========================================================================== */
 
 .form-group {
     margin-bottom: 1.35rem;
@@ -791,7 +732,6 @@ footer {
     margin-top: 0.35rem;
 }
 
-/* --- Campo de contraseña --- */
 .input-with-toggle {
     position: relative;
     display: flex;
@@ -826,7 +766,6 @@ footer {
     color: var(--primary-text);
 }
 
-/* --- Requisitos de contraseña --- */
 .password-requirements {
     list-style: none;
     margin: 0.75rem 0 0;
@@ -874,7 +813,6 @@ footer {
     background-size: 11px;
 }
 
-/* --- Nota de seguridad --- */
 .security-note {
     display: flex;
     gap: 0.85rem;
@@ -912,10 +850,6 @@ footer {
     margin-bottom: 0.1rem;
     color: #14385c;
 }
-
-/* ==========================================================================
-   Botones
-   ========================================================================== */
 
 .btn {
     padding: 0.8rem 1.5rem;
@@ -1002,10 +936,6 @@ footer {
     cursor: not-allowed;
 }
 
-/* ==========================================================================
-   Mensajes en línea
-   ========================================================================== */
-
 .error-message,
 .success-message {
     margin-top: 1rem;
@@ -1033,10 +963,6 @@ footer {
 .success-message.show {
     display: block;
 }
-
-/* ==========================================================================
-   Guía de pasos
-   ========================================================================== */
 
 .steps-guide {
     list-style: none;
@@ -1083,10 +1009,6 @@ footer {
     line-height: 1.5;
 }
 
-/* ==========================================================================
-   Reserva: formulario, leyenda y sectores
-   ========================================================================== */
-
 .reserva-form-container,
 .buscar-form-container,
 .crear-reserva-container,
@@ -1107,7 +1029,6 @@ footer {
     letter-spacing: var(--tracking-tight);
 }
 
-/* --- Filtro de búsqueda de mesas --- */
 .busqueda-campos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -1119,9 +1040,7 @@ footer {
     margin-bottom: 0;
 }
 
-/* Los campos de fecha/hora nunca muestran placeholder, así que la regla
-   general de :invalid los pintaba de rojo apenas carga la página. Acá los
-   errores se informan con el mensaje debajo del formulario. */
+/* sin esto los inputs de fecha/hora aparecen en rojo apenas carga la página */
 .busqueda-campos .form-group input:invalid:not(:placeholder-shown):not(:focus) {
     border-color: var(--border-color);
 }
@@ -1252,7 +1171,6 @@ footer {
     border-radius: var(--radius-full);
 }
 
-/* --- Mesas --- */
 .mesas-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
@@ -1363,10 +1281,6 @@ footer {
     font-variant-numeric: tabular-nums;
 }
 
-/* ==========================================================================
-   Tarjetas de reserva
-   ========================================================================== */
-
 .reservas-list {
     display: flex;
     flex-direction: column;
@@ -1473,10 +1387,6 @@ footer {
     background: var(--accent-tint);
 }
 
-/* ==========================================================================
-   Panel de administración
-   ========================================================================== */
-
 .filtros-container {
     display: flex;
     gap: 0.75rem;
@@ -1563,10 +1473,6 @@ footer {
     font-style: italic;
     padding: 1rem 0;
 }
-
-/* ==========================================================================
-   Modal
-   ========================================================================== */
 
 .modal {
     display: none;
@@ -1674,10 +1580,6 @@ footer {
     min-width: 140px;
 }
 
-/* ==========================================================================
-   Estados vacíos y carga
-   ========================================================================== */
-
 .empty-state {
     text-align: center;
     padding: 3.5rem 1.5rem;
@@ -1743,10 +1645,6 @@ footer {
     border-color: rgba(26, 35, 50, 0.25);
     border-top-color: var(--secondary-color);
 }
-
-/* ==========================================================================
-   Notificaciones toast
-   ========================================================================== */
 
 .toast-container {
     position: fixed;
@@ -1837,10 +1735,6 @@ footer {
     color: var(--text-color);
 }
 
-/* ==========================================================================
-   Diálogo de confirmación
-   ========================================================================== */
-
 .confirm-overlay {
     position: fixed;
     inset: 0;
@@ -1889,10 +1783,6 @@ footer {
     min-width: 120px;
 }
 
-/* ==========================================================================
-   Insignias
-   ========================================================================== */
-
 .badge {
     display: inline-flex;
     align-items: center;
@@ -1905,10 +1795,6 @@ footer {
 
 .badge-success { background: var(--success-tint); color: #1c6b46; }
 .badge-danger  { background: var(--accent-tint);  color: #9c2626; }
-
-/* ==========================================================================
-   Animaciones
-   ========================================================================== */
 
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -1943,11 +1829,6 @@ footer {
     to { transform: translateX(110%); opacity: 0; }
 }
 
-/* ==========================================================================
-   Adaptación a pantallas
-   ========================================================================== */
-
-/* --- Escritorio chico / tablet apaisada --- */
 @media (max-width: 1024px) {
     .carta-section {
         padding: 2rem;
@@ -1962,7 +1843,6 @@ footer {
     }
 }
 
-/* --- Tablet --- */
 @media (max-width: 768px) {
     main {
         padding: 1.75rem 0 2.5rem;
@@ -1978,7 +1858,6 @@ footer {
         position: relative;
     }
 
-    /* El menú desplegado va debajo del logo y del botón, no entre ellos */
     header nav {
         order: 3;
         display: none;
@@ -2009,12 +1888,10 @@ footer {
         display: none;
     }
 
-    /* Los accesos que agrega el JS en la portada se apilan igual que el resto */
     #nav-user-section {
         display: contents;
     }
 
-    /* En tarjetas angostas, "6 personas" en una sola línea y sin ícono */
     .mesa-capacidad {
         white-space: nowrap;
     }
@@ -2098,7 +1975,6 @@ footer {
     }
 }
 
-/* --- Móvil --- */
 @media (max-width: 480px) {
     .container {
         padding: 0 14px;
@@ -2166,7 +2042,6 @@ footer {
     }
 }
 
-/* --- Preferencias del sistema --- */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -2186,7 +2061,6 @@ footer {
     }
 }
 
-/* --- Impresión --- */
 @media print {
     header,
     footer,

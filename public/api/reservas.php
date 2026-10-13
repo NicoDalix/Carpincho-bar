@@ -10,8 +10,7 @@ try {
     $pdo = getDB();
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        // La tarifa de la mesa se trae con alias: si se llamara tarifa_minima
-        // pisaría a r.tarifa_minima, que es la tarifa que se cobró al reservar.
+        // alias para no pisar r.tarifa_minima (lo que se cobró al reservar)
         $stmt = $pdo->prepare(
             'SELECT r.*, m.numero, m.sector, m.capacidad, m.tarifa_minima AS mesa_tarifa_minima
              FROM reservas r

@@ -1,13 +1,9 @@
-# Apache (mod_php) descarta el header Authorization antes de exponerlo a PHP,
-# por lo que $_SERVER['HTTP_AUTHORIZATION'] llega vacío y toda la autenticación
-# JWT falla con 401. Estas directivas lo reinyectan en el entorno del script.
+# Apache no le pasa el header Authorization a PHP, sin esto el JWT da 401
 
 <IfModule mod_setenvif.c>
     SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 </IfModule>
 
-# Archivos internos que nunca deben poder pedirse desde el navegador:
-# el secreto de los tokens, el esquema de la base y la documentación.
 <FilesMatch "^(jwt-secret\.php|schema\.sql|.*\.md)$">
     Require all denied
 </FilesMatch>

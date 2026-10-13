@@ -1,4 +1,3 @@
-// API del backend PHP + MySQL
 const API_BASE = 'api';
 function escapeHtml(valor) {
     return String(valor ?? '')

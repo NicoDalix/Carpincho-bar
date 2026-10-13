@@ -1,11 +1,4 @@
-/**
- * Panel de administración (admin.html): listado, búsqueda, alta y baja de
- * reservas, y gestión de la carta.
- *
- * El control de rol de acá es solo de interfaz: la protección real está en el
- * servidor (requireAdmin() en cada endpoint de api/admin/).
- */
-
+// esto es solo para la interfaz, el control real lo hace requireAdmin() en el servidor
 const user = API.getCurrentUser();
 
 if (!user || user.rol !== 'admin') {
@@ -20,7 +13,6 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     window.location.href = 'login.html';
 });
 
-// Tabs del admin
 document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
@@ -45,7 +37,6 @@ function formatearSector(sector) {
     return sector.charAt(0).toUpperCase() + sector.slice(1);
 }
 
-// --- Todas las reservas ---
 async function cargarTodasReservas() {
     try {
         const reservas = await API.adminGetReservas();
@@ -65,7 +56,6 @@ function renderizarTodasReservas(reservas) {
         ? reservas
         : reservas.filter(r => r.estado === filtroEstado);
 
-    // Más recientes primero
     reservasFiltradas.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
 
     if (reservasFiltradas.length === 0) {
@@ -164,7 +154,6 @@ async function eliminarReserva(reservaId) {
 document.getElementById('filtro-estado').addEventListener('change', cargarTodasReservas);
 document.getElementById('refrescar-reservas').addEventListener('click', cargarTodasReservas);
 
-// --- Buscar reservas por nombre ---
 document.getElementById('buscar-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('nombre-buscar').value.trim();
@@ -191,10 +180,6 @@ document.getElementById('buscar-form').addEventListener('submit', async (e) => {
     }
 });
 
-// --- Crear reserva manualmente ---
-
-// Carga las mesas en el select con la disponibilidad del horario elegido en
-// el formulario (sin fecha elegida, el backend usa "ahora").
 async function cargarMesasParaSelect() {
     try {
         const fechaHora = document.getElementById('fecha-reserva-admin').value;
@@ -212,7 +197,6 @@ async function cargarMesasParaSelect() {
             select.appendChild(option);
         });
 
-        // Si la mesa que estaba elegida sigue libre en el nuevo horario, se mantiene
         const previa = select.querySelector(`option[value="${seleccionPrevia}"]`);
         if (previa && !previa.disabled) {
             select.value = seleccionPrevia;
@@ -222,7 +206,6 @@ async function cargarMesasParaSelect() {
     }
 }
 
-// Al cambiar el horario cambia qué mesas están libres
 document.getElementById('fecha-reserva-admin').addEventListener('change', cargarMesasParaSelect);
 
 document.getElementById('crear-reserva-form').addEventListener('submit', async (e) => {
@@ -251,7 +234,6 @@ document.getElementById('crear-reserva-form').addEventListener('submit', async (
     }
 });
 
-// --- Gestionar carta ---
 function actualizarCategoriasCartaForm() {
     const tipo = document.getElementById('carta-tipo').value;
     const select = document.getElementById('carta-categoria');
@@ -289,7 +271,6 @@ document.getElementById('agregar-carta-form').addEventListener('submit', async (
     }
 });
 
-// Tarjeta de la carta con botón para eliminar el ítem
 function crearItemCartaAdmin(tipo) {
     return (item) => {
         const wrapper = document.createElement('div');
@@ -338,5 +319,4 @@ async function eliminarItemCarta(tipo, id, nombre) {
     }
 }
 
-// Cargar reservas al iniciar
 cargarTodasReservas();

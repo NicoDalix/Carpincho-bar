@@ -21,7 +21,6 @@ function initDatabase(): void
 {
     $pdo = getDB();
 
-    // Usuario admin por defecto
     $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE email = ? LIMIT 1');
     $stmt->execute([ADMIN_EMAIL]);
     if (!$stmt->fetch()) {
@@ -32,7 +31,6 @@ function initDatabase(): void
         $insert->execute([ADMIN_EMAIL, $hash, ADMIN_NOMBRE, 'admin']);
     }
 
-    // Mesas
     $count = (int) $pdo->query('SELECT COUNT(*) FROM mesas')->fetchColumn();
     if ($count === 0) {
         $insertMesa = $pdo->prepare(
@@ -50,7 +48,6 @@ function initDatabase(): void
         }
     }
 
-    // Carta platos
     $platosCount = (int) $pdo->query('SELECT COUNT(*) FROM carta_platos')->fetchColumn();
     if ($platosCount === 0) {
         $platos = [
@@ -75,7 +72,6 @@ function initDatabase(): void
         }
     }
 
-    // Carta bebidas
     $bebidasCount = (int) $pdo->query('SELECT COUNT(*) FROM carta_bebidas')->fetchColumn();
     if ($bebidasCount === 0) {
         $bebidas = [

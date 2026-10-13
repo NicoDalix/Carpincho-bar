@@ -44,13 +44,11 @@ function renderizarSeccionCarta(container, items, categorias, crearCard = crearI
     });
 }
 
-/** Dibuja platos y bebidas en sus contenedores. */
 function renderizarCarta(carta, platosContainer, bebidasContainer, crearCard) {
     renderizarSeccionCarta(platosContainer, carta.platos, CATEGORIAS_CARTA.plato, crearCard);
     renderizarSeccionCarta(bebidasContainer, carta.bebidas, CATEGORIAS_CARTA.bebida, crearCard);
 }
 
-/** Pide la carta a la API y la dibuja; si falla, lo informa en la página. */
 async function cargarYRenderizarCarta(platosContainer, bebidasContainer, crearCard) {
     platosContainer.innerHTML = '<p class="carta-vacia-msg">Cargando platos...</p>';
     bebidasContainer.innerHTML = '<p class="carta-vacia-msg">Cargando bebidas...</p>';

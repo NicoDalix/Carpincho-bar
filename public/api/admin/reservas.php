@@ -11,8 +11,7 @@ try {
     $pdo = getDB();
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        // La tarifa de la mesa va con alias para no pisar r.tarifa_minima
-        // (la tarifa que se cobró al momento de reservar).
+        // alias para no pisar r.tarifa_minima (lo que se cobró al reservar)
         $select = "SELECT r.*, m.numero, m.sector, m.capacidad, m.tarifa_minima AS mesa_tarifa_minima,
                           u.nombre AS usuario_nombre, u.email AS usuario_email
                    FROM reservas r
@@ -52,9 +51,7 @@ try {
         $timestamp = parsearFechaReserva($fechaHora);
         $fechaMysql = date('Y-m-d H:i:s', $timestamp);
 
-        // Se valida la mesa ANTES de crear/actualizar el usuario, y todo va en
-        // la misma transacción: si la reserva se rechaza no queda un usuario
-        // huérfano creado.
+        // todo en una transacción para no dejar el usuario creado si la reserva falla
         $pdo->beginTransaction();
         try {
             $mesa = validarReservaMesa($pdo, $mesaId, $timestamp, $cantidadPersonas);

@@ -1,7 +1,3 @@
-/**
- * Validación de contraseña (cliente)
- * Mínimo 8 caracteres, al menos una letra y un número
- */
 const PasswordValidator = {
     MIN_LENGTH: 8,
 

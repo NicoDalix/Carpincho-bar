@@ -1,6 +1,4 @@
-# Indicaciones para buscadores (Google, Bing, etc.)
 User-agent: *
-# La API, el código interno y las páginas con sesión no tienen sentido en un buscador
 Disallow: /api/
 Disallow: /app/
 Disallow: /dashboard.html

@@ -1,6 +1,3 @@
-/**
- * Utilidades de interfaz compartidas (UX/UI)
- */
 const UI = {
     toastContainer: null,
 
@@ -110,7 +107,6 @@ const UI = {
                 if (e.key === 'Escape') close(false);
             };
 
-            // Se cierre como se cierre, se saca el listener de Escape
             const close = (result) => {
                 document.removeEventListener('keydown', onKeydown);
                 overlay.remove();

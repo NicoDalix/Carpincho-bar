@@ -1,8 +1,3 @@
-/**
- * Panel del cliente (dashboard.html): búsqueda y reserva de mesas,
- * listado/cancelación de reservas propias y carta.
- */
-
 let mesas = [];
 let mesaSeleccionada = null;
 const user = API.getCurrentUser();
@@ -19,7 +14,6 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     window.location.href = 'login.html';
 });
 
-// Tabs del dashboard
 document.querySelectorAll('.dashboard-tabs .tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
@@ -44,8 +38,7 @@ document.querySelectorAll('.dashboard-tabs .tab-btn').forEach(btn => {
     });
 });
 
-// --- Búsqueda de mesas ---
-let busquedaActual = null; // { fechaHora: 'YYYY-MM-DDTHH:MM', personas: number }
+let busquedaActual = null;
 
 const fechaBusquedaInput = document.getElementById('fecha-busqueda');
 const horaBusquedaInput = document.getElementById('hora-busqueda');
@@ -136,7 +129,6 @@ async function cargarMesas() {
     }
 }
 
-// --- Auto-refresh (polling) ---
 const POLLING_MS = 15000; 
 
 setInterval(() => {
@@ -155,7 +147,6 @@ function renderizarMesas() {
         'patio': document.getElementById('patio-mesas')
     };
 
-    // Solo las mesas libres en esa franja y con lugar para todos
     const aptas = mesas.filter(m => m.disponible && m.capacidad >= personas);
 
     Object.keys(sectores).forEach(sector => {
@@ -207,7 +198,6 @@ function crearMesaCard(mesa) {
 }
 
 function seleccionarMesa(mesa) {
-    // Remover selección anterior
     document.querySelectorAll('.mesa-card').forEach(c => {
         c.classList.remove('seleccionada');
     });
@@ -244,11 +234,9 @@ function mostrarModalReserva(mesa) {
     modal.classList.add('show');
 }
 
-// Cerrar modal
 document.querySelector('.close-modal').addEventListener('click', cerrarModalReserva);
 document.getElementById('cancelar-reserva-btn').addEventListener('click', cerrarModalReserva);
 
-// Confirmar reserva
 document.getElementById('confirmar-reserva-btn').addEventListener('click', async () => {
     if (!mesaSeleccionada || !busquedaActual) return;
 
@@ -266,7 +254,6 @@ document.getElementById('confirmar-reserva-btn').addEventListener('click', async
     }
 });
 
-// --- Mis Reservas ---
 async function cargarReservas() {
     const container = document.getElementById('reservas-container');
     try {
@@ -290,8 +277,7 @@ function renderizarReservas(reservas) {
     reservas.forEach(reserva => container.appendChild(crearReservaCard(reserva)));
 }
 
-// Texto de la política según cuánto falta para la reserva (misma regla que
-// aplica el servidor en reservas-cancelar.php)
+// misma regla que reservas-cancelar.php
 function textoPoliticaCancelacion(horasAntes) {
     if (horasAntes > 12) {
         return 'Reembolso completo si cancelás con más de 12 horas de anticipación';
@@ -383,13 +369,12 @@ async function cancelarReserva(reservaId) {
             UI.info('Reserva cancelada. No corresponde reembolso según la política de cancelación.');
         }
         cargarReservas();
-        cargarMesas(); // Actualizar disponibilidad de mesas
+        cargarMesas();
     } catch (error) {
         UI.error(error.error || 'Error al cancelar la reserva');
     }
 }
 
-// --- Carta ---
 function cargarCarta() {
     cargarYRenderizarCarta(
         document.getElementById('carta-platos-container'),

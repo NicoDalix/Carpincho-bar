@@ -11,9 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     jsonError('Método no permitido', 405);
 }
 
-/**
- * Responde 429 indicando cuánto falta para poder volver a intentar.
- */
 function respuestaBloqueado(int $segundos): void
 {
     $minutos = (int) ceil($segundos / 60);
@@ -43,7 +40,6 @@ try {
     $pdo = getDB();
     $ip = obtenerIp();
 
-    // ¿Está bloqueado por demasiados intentos? (se chequea antes de mirar la contraseña)
     $espera = loginSegundosBloqueado($pdo, $ip);
     if ($espera > 0) {
         respuestaBloqueado($espera);

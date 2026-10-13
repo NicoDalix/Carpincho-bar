@@ -15,8 +15,6 @@ try {
 
     $mesas = $pdo->query('SELECT id, numero, sector, capacidad, tarifa_minima FROM mesas ORDER BY id')->fetchAll();
 
-    // Disponibilidad para el horario que el admin eligió en el formulario
-    // (mismo criterio que la vista del cliente). Sin fecha, se usa "ahora".
     $timestamp = parsearFechaReserva($_GET['fechaHora'] ?? date('Y-m-d\TH:i:s'));
 
     $reservasPorMesa = [];

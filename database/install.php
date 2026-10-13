@@ -1,14 +1,9 @@
 <?php
-/**
- * Script de instalación: crea las tablas e inserta datos iniciales.
- * Ejecutar una vez: http://localhost/tu-proyecto/database/install.php
- */
+// Ejecutar una vez: http://localhost/<proyecto>/database/install.php
 require_once __DIR__ . '/../public/app/config.php';
 
 header('Content-Type: text/html; charset=utf-8');
 
-// Solo se puede ejecutar desde la misma máquina del servidor (o por consola).
-// Si el sitio queda publicado, nadie de afuera puede reinstalar ni ver datos.
 $ipCliente = $_SERVER['REMOTE_ADDR'] ?? '';
 if (PHP_SAPI !== 'cli' && !in_array($ipCliente, ['127.0.0.1', '::1'], true)) {
     http_response_code(403);
@@ -25,7 +20,6 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 
-    // El nombre sale de config.php, el mismo que usa getDB() para conectarse.
     $dbName = str_replace('`', '``', DB_NAME);
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $pdo->exec("USE `$dbName`");
@@ -44,7 +38,6 @@ try {
     require_once __DIR__ . '/../public/app/db.php';
     initDatabase();
     $messages[] = 'Datos iniciales insertados (admin, mesas, carta).';
-    // La contraseña no se muestra: está en public/app/config.php (ADMIN_PASSWORD).
     $messages[] = 'Usuario administrador: ' . htmlspecialchars(ADMIN_EMAIL);
 } catch (PDOException $e) {
     $messages[] = 'Error: ' . htmlspecialchars($e->getMessage());

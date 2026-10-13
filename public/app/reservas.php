@@ -7,7 +7,6 @@ class ReservaException extends Exception
 {
 }
 
-/** Convierte la fecha que manda el front en timestamp, o corta con 400. */
 function parsearFechaReserva(string $fechaHora): int
 {
     $timestamp = strtotime($fechaHora);

@@ -1,7 +1,3 @@
-/**
- * Página pública (index.html): carta y navegación según la sesión.
- */
-
 document.addEventListener('DOMContentLoaded', () => {
     configurarNavegacion();
     cargarYRenderizarCarta(
@@ -10,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 });
 
-// Completa el menú con el saludo y los accesos según haya sesión o no
 function configurarNavegacion() {
     const user = API.getCurrentUser();
     const navSection = document.getElementById('nav-user-section');

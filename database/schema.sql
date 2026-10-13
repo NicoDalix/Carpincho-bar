@@ -1,8 +1,4 @@
--- Tablas de El Carpincho Gourmet.
---
--- No crea ni selecciona la base: install.php la crea con el nombre definido
--- en DB_NAME (api/config.php), que es la única fuente de ese nombre. Para
--- importarlo a mano (phpMyAdmin), seleccioná primero esa base.
+-- La base la crea install.php. Si lo importás a mano, seleccioná la base antes.
 
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
